@@ -17,7 +17,9 @@ RUN printf '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-
 RUN ls -lh index.html && wc -l index.html && file index.html && grep -c "root" index.html || echo "File check done"
 
 # Build the application
-RUN echo "=== Running Vite build with verbose output ===" && npx vite build --logLevel info
+RUN echo "=== Cleaning and building ===" && \
+    rm -rf dist && \
+    npx vite build --logLevel info --force
 
 # Show what was built
 RUN echo "=== DIST FILES ===" && find dist -type f -exec ls -lh {} \;
