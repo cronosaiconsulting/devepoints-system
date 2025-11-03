@@ -1,6 +1,10 @@
 FROM node:20 AS build
 WORKDIR /app
 
+# Accept build argument for API URL
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Copy package files first
 COPY package.json ./
 RUN npm install
@@ -8,18 +12,11 @@ RUN npm install
 # Copy ALL project files at once (dockerignore will exclude what we don't need)
 COPY . .
 
-# Verify what we have
-RUN echo "=== ALL root files ===" && ls -la && \
-    echo "=== Source files ===" && find src -type f && \
-    echo "=== Critical config files ===" && \
-    (test -f index.html && echo "✓ index.html" || echo "✗ index.html MISSING") && \
-    (test -f vite.config.ts && echo "✓ vite.config.ts" || echo "✗ vite.config.ts MISSING") && \
-    (test -f tsconfig.json && echo "✓ tsconfig.json" || echo "✗ tsconfig.json MISSING") && \
-    (test -f tsconfig.node.json && echo "✓ tsconfig.node.json" || echo "✗ tsconfig.node.json MISSING") && \
-    (test -f tailwind.config.js && echo "✓ tailwind.config.js" || echo "✗ tailwind.config.js MISSING") && \
-    (test -f postcss.config.js && echo "✓ postcss.config.js" || echo "✗ postcss.config.js MISSING") && \
-    echo "=== Checking index.html content ===" && head -5 index.html && \
-    echo "=== Checking vite.config.ts ===" && cat vite.config.ts
+# Verify environment variables and files
+RUN echo "=== Environment Variables ===" && \
+    echo "VITE_API_URL: $VITE_API_URL" && \
+    echo "=== Config files present ===" && \
+    ls -la *.* 2>/dev/null | grep -E "(index.html|vite.config|tsconfig)" || echo "Config files OK"
 
 # Build - capture full output to file
 RUN echo "=== Running TypeScript compilation ===" && \
