@@ -1,16 +1,12 @@
-:{$PORT}
-
-root * dist
-encode gzip
-try_files {path} /index.html
-file_server
-
-header {
-    X-Content-Type-Options nosniff
-    X-Frame-Options DENY
-    Referrer-Policy no-referrer-when-downgrade
+{
+    admin off
+    persist_config off
+    auto_https off
 }
 
-handle /health {
-    respond "OK" 200
+:{$PORT:3000} {
+    root * dist
+    encode gzip
+    file_server
+    try_files {path} /index.html
 }
