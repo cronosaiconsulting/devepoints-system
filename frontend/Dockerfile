@@ -10,13 +10,16 @@ COPY . .
 
 # Verify what we have
 RUN echo "=== Files in root ===" && ls -la && \
-    echo "=== Total source files ===" && find src -name "*.tsx" -o -name "*.ts" -o -name "*.css" | wc -l
+    echo "=== Source files ===" && find src -type f && \
+    echo "=== Config files ===" && ls -la *.* 2>/dev/null || true
 
-# Build
-RUN npm run build
+# Build with full output
+RUN npm run build 2>&1 | tee build.log && \
+    echo "=== Build log ===" && cat build.log && \
+    echo "=== Build exit code: $? ==="
 
-# Show results
-RUN echo "=== Build complete - dist contents ===" && ls -lah dist/ && find dist -type f
+# Show detailed results
+RUN echo "=== Dist contents ===" && find dist -type f -ls
 
 FROM caddy:2-alpine
 WORKDIR /app
