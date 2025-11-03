@@ -10,6 +10,7 @@ export const Store = () => {
   const [purchasing, setPurchasing] = useState<number | null>(null);
   const [success, setSuccess] = useState(false);
   const [sliderValues, setSliderValues] = useState<{[key: number]: number}>({});
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
   useEffect(() => {
     loadData();
@@ -55,10 +56,21 @@ export const Store = () => {
       const balanceRes = await userAPI.getBalance();
       setBalance(balanceRes.data.balance);
       await loadData();
+      setSelectedProduct(null); // Close modal after purchase
     } catch (error: any) {
       alert(error.response?.data?.error || '¡Compra fallida!');
     } finally {
       setPurchasing(null);
+    }
+  };
+
+  const handleCanjeClick = (product: any) => {
+    // For standard products with token offers, show modal
+    if (product.type === 'standard' && product.token_offers && product.token_offers.length > 0) {
+      setSelectedProduct(product);
+    } else {
+      // For other products, purchase directly
+      handlePurchase(product.id, product.type === 'free' ? sliderValues[product.id] || 0 : product.price, product.type === 'free');
     }
   };
 
@@ -181,7 +193,7 @@ export const Store = () => {
                   )}
 
                   <button
-                    onClick={() => handlePurchase(product.id, isFree ? sliderValue : product.price, isFree)}
+                    onClick={() => handleCanjeClick(product)}
                     disabled={!canPurchase || purchasing === product.id}
                     className={`w-full px-4 py-2 rounded-lg font-semibold transition-colors ${
                       !canPurchase
@@ -189,7 +201,12 @@ export const Store = () => {
                         : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                   >
-                    {purchasing === product.id ? 'Procesando...' : 'Canjear'}
+                    {purchasing === product.id
+                      ? 'Procesando...'
+                      : (product.type === 'standard' && product.token_offers && product.token_offers.length > 0)
+                        ? 'Ver opciones'
+                        : 'Canjear'
+                    }
                   </button>
                 </div>
               </div>
@@ -201,6 +218,69 @@ export const Store = () => {
           <div className="text-center py-12">
             <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600 text-lg">No hay productos disponibles en este momento</p>
+          </div>
+        )}
+
+        {/* Token Offers Modal */}
+        {selectedProduct && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-2xl font-bold mb-2">{selectedProduct.name}</h3>
+              <p className="text-gray-600 mb-6">{selectedProduct.description}</p>
+
+              <div className="space-y-3">
+                {/* Main option - Full token price */}
+                <button
+                  onClick={() => handlePurchase(selectedProduct.id, selectedProduct.price, false)}
+                  disabled={balance < selectedProduct.price || purchasing === selectedProduct.id}
+                  className={`w-full p-4 rounded-lg font-semibold transition-colors text-left ${
+                    balance < selectedProduct.price
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-lg">Canjear por {selectedProduct.price} Tokens</div>
+                      <div className="text-sm opacity-90">Precio completo en tokens</div>
+                    </div>
+                    <Coins className="w-6 h-6" />
+                  </div>
+                </button>
+
+                {/* Token offers */}
+                {selectedProduct.token_offers && selectedProduct.token_offers.map((offer: any, idx: number) => {
+                  const canAfford = balance >= offer.tokens;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => canAfford ? handlePurchase(selectedProduct.id, offer.tokens, false) : null}
+                      disabled={!canAfford || purchasing === selectedProduct.id}
+                      className={`w-full p-4 rounded-lg font-semibold transition-colors text-left ${
+                        !canAfford
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          : 'bg-green-100 text-green-800 hover:bg-green-200 border-2 border-green-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-lg">{offer.summary}</div>
+                          <div className="text-sm opacity-75">Opción con tokens + efectivo</div>
+                        </div>
+                        <Coins className="w-6 h-6" />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="w-full mt-4 py-2 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         )}
       </div>
