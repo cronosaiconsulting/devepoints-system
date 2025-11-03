@@ -23,7 +23,8 @@ export const AdminSidebar = () => {
 
   return (
     <aside className="w-64 bg-gray-900 text-white min-h-screen p-4">
-      <div className="mb-8">
+      <div className="mb-8 flex flex-col items-center">
+        <img src="/logo_develand.png" alt="Develand" className="w-20 h-20 object-contain mb-3" />
         <h2 className="text-xl font-bold text-blue-400 mb-1">Admin Panel</h2>
         <p className="text-gray-400 text-sm">Tokens Develand System</p>
       </div>

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, Coins, ShoppingBag, Users, Gift, LayoutDashboard } from 'lucide-react';
+import { LogOut, ShoppingBag, Users, Gift, LayoutDashboard } from 'lucide-react';
 
 export const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
@@ -10,8 +10,8 @@ export const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2 text-xl font-bold">
-            <Coins className="w-6 h-6" />
-            <span>DevePoints</span>
+            <img src="/logo_develand.png" alt="Develand" className="w-8 h-8 object-contain" />
+            <span>Tokens Develand</span>
           </Link>
 
           <div className="flex items-center space-x-6">

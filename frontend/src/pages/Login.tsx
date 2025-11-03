@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../api/client';
 import { useAuth } from '../hooks/useAuth';
-import { Coins } from 'lucide-react';
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -48,9 +47,9 @@ export const Login = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md">
-        <div className="flex items-center justify-center mb-8">
-          <Coins className="w-12 h-12 text-blue-600 mr-2" />
-          <h1 className="text-3xl font-bold text-gray-800">DevePoints</h1>
+        <div className="flex flex-col items-center justify-center mb-8">
+          <img src="/logo_develand.png" alt="Develand Logo" className="w-32 h-32 mb-4 object-contain" />
+          <h1 className="text-3xl font-bold text-gray-800">Tokens Develand</h1>
         </div>
 
         <h2 className="text-2xl font-semibold text-center mb-6">
