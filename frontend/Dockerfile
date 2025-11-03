@@ -18,7 +18,7 @@ RUN echo "Checking src files:" && ls -la src/ && ls -la src/pages/
 RUN npm run build
 
 # Show what was built
-RUN echo "Build output:" && ls -la dist/ && ls -la dist/assets/ 2>/dev/null || echo "No assets folder"
+RUN echo "Build output:" && find dist -type f -ls
 
 FROM caddy:2-alpine
 WORKDIR /app
