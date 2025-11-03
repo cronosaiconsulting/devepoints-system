@@ -2,9 +2,9 @@ FROM node:20 AS build
 WORKDIR /app
 COPY package.json ./
 RUN npm install
-COPY . ./
-RUN echo "=== Source files ===" && ls -la src/
-RUN npm run build -- --logLevel info
+COPY . .
+RUN echo "=== All files after COPY ===" && ls -laR
+RUN npm run build
 RUN echo "=== Dist contents ===" && find dist -type f
 
 FROM caddy:2-alpine
