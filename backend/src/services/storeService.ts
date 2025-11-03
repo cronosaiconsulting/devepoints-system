@@ -3,14 +3,28 @@ import { userService } from './userService';
 
 export const storeService = {
   async getProducts() {
-    const result = await pool.query(
-      `SELECT id, name, description, price, real_price, max_tokens, type, token_offers, created_at
-       FROM products
-       WHERE active = true
-       ORDER BY price ASC`
-    );
-
-    return result.rows;
+    try {
+      // Try with token_offers column
+      const result = await pool.query(
+        `SELECT id, name, description, price, real_price, max_tokens, type, token_offers, created_at
+         FROM products
+         WHERE active = true
+         ORDER BY price ASC`
+      );
+      return result.rows;
+    } catch (error: any) {
+      // If token_offers column doesn't exist, query without it
+      if (error.code === '42703') {
+        const result = await pool.query(
+          `SELECT id, name, description, price, real_price, max_tokens, type, created_at
+           FROM products
+           WHERE active = true
+           ORDER BY price ASC`
+        );
+        return result.rows.map((row: any) => ({ ...row, token_offers: [] }));
+      }
+      throw error;
+    }
   },
 
   async purchaseProduct(userId: number, productId: number, tokensSpent?: number) {

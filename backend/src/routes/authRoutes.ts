@@ -5,9 +5,9 @@ import { z } from 'zod';
 const router = Router();
 
 const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  fullName: z.string().min(2),
+  email: z.string().email({ message: 'Email inválido' }),
+  password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
+  fullName: z.string().min(2, { message: 'El nombre debe tener al menos 2 caracteres' }),
   referralCode: z.string().optional()
 });
 
@@ -22,7 +22,12 @@ router.post('/register', async (req, res) => {
     const user = await userService.register(email, password, fullName, referralCode);
     res.status(201).json({ success: true, user });
   } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    if (error.name === 'ZodError') {
+      const firstError = error.errors[0];
+      res.status(400).json({ error: firstError.message });
+    } else {
+      res.status(400).json({ error: error.message });
+    }
   }
 });
 
