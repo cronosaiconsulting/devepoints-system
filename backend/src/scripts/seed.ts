@@ -13,7 +13,7 @@ async function seed() {
 
   try {
     // Create admin user
-    const adminPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10);
+    const adminPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || '1234', 10);
     const adminCode = generateReferralCode();
 
     await pool.query(`
@@ -21,7 +21,7 @@ async function seed() {
       VALUES ($1, $2, $3, $4, $5)
       ON CONFLICT (email) DO NOTHING
     `, [
-      process.env.ADMIN_EMAIL || 'admin@develand.com',
+      process.env.ADMIN_EMAIL || 'juanma@develand.es',
       adminPassword,
       'Admin User',
       adminCode,
@@ -75,7 +75,7 @@ async function seed() {
 
     console.log('✅ Seeding completed successfully!');
     console.log('\n📝 Login credentials:');
-    console.log(`Admin: ${process.env.ADMIN_EMAIL || 'admin@develand.com'} / ${process.env.ADMIN_PASSWORD || 'admin123'}`);
+    console.log(`Admin: ${process.env.ADMIN_EMAIL || 'juanma@develand.es'} / ${process.env.ADMIN_PASSWORD || '1234'}`);
     console.log('User: test@example.com / test123');
 
     process.exit(0);
