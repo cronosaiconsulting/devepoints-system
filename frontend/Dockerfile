@@ -6,14 +6,21 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 
-# Copy all source files
-COPY index.html vite.config.ts tsconfig.json tsconfig.node.json ./
+# Copy all source files explicitly
+COPY index.html ./
+COPY vite.config.ts ./
+COPY tsconfig.json ./
+COPY tsconfig.node.json ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
 COPY src ./src
-COPY tailwind.config.js postcss.config.js ./
 
-# Verify source files are present
-RUN echo "Checking src files:" && ls -la src/ && test -f src/main.tsx && echo "main.tsx exists" || echo "ERROR: main.tsx missing!"
-RUN echo "Checking index.html:" && cat index.html
+# Verify files
+RUN echo "=== Verifying copied files ===" && \
+    ls -lh index.html && \
+    wc -l index.html && \
+    echo "First 5 lines:" && head -5 index.html && \
+    echo "Last 5 lines:" && tail -5 index.html
 
 # Build the application
 RUN echo "=== Running Vite build with verbose output ===" && npx vite build --logLevel info
