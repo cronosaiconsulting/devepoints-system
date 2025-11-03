@@ -1,4 +1,6 @@
 const PDFDocument = require('pdfkit');
+const path = require('path');
+const fs = require('fs');
 
 export interface CouponData {
   orderId: number;
@@ -28,18 +30,32 @@ export const pdfService = {
           reject(err);
         });
 
-      // Header with Develand branding
-      doc
-        .fontSize(28)
-        .fillColor('#2563eb')
-        .text('CUPÓN DE DESCUENTO', { align: 'center' })
-        .moveDown(0.5);
+        // Add logo at the top middle - 1/3 of page width
+        const logoPath = path.join(__dirname, '../../assets/logo_develand.png');
+        if (fs.existsSync(logoPath)) {
+          const pageWidth = 595; // A4 width in points
+          const logoWidth = pageWidth / 3; // 1/3 of page width
+          const logoX = (pageWidth - logoWidth) / 2; // Center horizontally
 
-      doc
-        .fontSize(16)
-        .fillColor('#1e40af')
-        .text('Tokens Develand', { align: 'center' })
-        .moveDown(2);
+          doc.image(logoPath, logoX, 50, {
+            width: logoWidth,
+            align: 'center'
+          });
+          doc.moveDown(6); // Space after logo
+        }
+
+        // Header with Develand branding
+        doc
+          .fontSize(28)
+          .fillColor('#2563eb')
+          .text('CUPÓN DE DESCUENTO', { align: 'center' })
+          .moveDown(0.5);
+
+        doc
+          .fontSize(16)
+          .fillColor('#1e40af')
+          .text('Tokens Develand', { align: 'center' })
+          .moveDown(2);
 
       // Order Information
       doc
