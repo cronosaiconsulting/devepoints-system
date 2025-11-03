@@ -7,7 +7,6 @@ RUN npm ci --only=production=false
 
 # Copy all source files
 COPY index.html vite.config.ts tsconfig.json tsconfig.node.json ./
-COPY public ./public
 COPY src ./src
 COPY tailwind.config.js postcss.config.js ./
 
