@@ -95,8 +95,20 @@ export const Store = () => {
           {products.map((product) => {
             const isFree = product.type === 'free';
             const sliderValue = sliderValues[product.id] || 0;
-            const maxSlider = Math.min(product.max_tokens || 0, balance);
-            const canPurchase = isFree ? sliderValue > 0 && sliderValue <= balance : balance >= product.price;
+            const productMaxTokens = product.max_tokens || 0;
+            const maxSlider = productMaxTokens > 0 ? Math.min(productMaxTokens, balance) : 0;
+            const canPurchase = isFree ? sliderValue > 0 && sliderValue <= balance && sliderValue <= productMaxTokens : balance >= product.price;
+
+            // Debug logging
+            if (isFree) {
+              console.log(`Product ${product.name}:`, {
+                type: product.type,
+                max_tokens: product.max_tokens,
+                balance,
+                maxSlider,
+                sliderValue
+              });
+            }
 
             return (
               <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">

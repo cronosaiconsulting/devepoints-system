@@ -74,11 +74,11 @@ app.post('/reset-admin-temp', async (req, res) => {
     // Create default products (SAEL and Experto en Coaching for beta)
     // Note: 1 token = 1€, max slider for 'free' type = 50% of price
     const products = [
-      { name: 'SAEL', description: 'Sistema Avanzado de Entrenamiento de Liderazgo', price: 1390, real_price: 1390, max_tokens: 695, type: 'standard' },
-      { name: 'Experto en Coaching', description: 'Programa completo de certificación en Coaching', price: 1590, real_price: 1590, max_tokens: 795, type: 'standard' },
-      { name: '10% Discount Coupon', description: '10% off your next service', price: 50, real_price: 50, max_tokens: null, type: 'promotion' },
-      { name: '20% Discount Coupon', description: '20% off your next service', price: 100, real_price: 100, max_tokens: null, type: 'promotion' },
-      { name: 'Free Consultation', description: '30-minute free consultation', price: 80, real_price: 80, max_tokens: null, type: 'standard' },
+      { name: 'SAEL', description: 'Sistema Avanzado de Entrenamiento de Liderazgo', price: 1390, real_price: 1390, max_tokens: 695, type: 'free' },
+      { name: 'Experto en Coaching', description: 'Programa completo de certificación en Coaching', price: 1590, real_price: 1590, max_tokens: 795, type: 'free' },
+      { name: '10% Discount Coupon', description: '10% off your next service', price: 50, real_price: 50, max_tokens: 25, type: 'promotion' },
+      { name: '20% Discount Coupon', description: '20% off your next service', price: 100, real_price: 100, max_tokens: 50, type: 'promotion' },
+      { name: 'Free Consultation', description: '30-minute free consultation', price: 80, real_price: 80, max_tokens: 40, type: 'free' },
     ];
 
     // Delete existing products with the same names to avoid duplicates
