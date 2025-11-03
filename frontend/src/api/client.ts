@@ -2,6 +2,11 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
+console.log('=== API Configuration ===');
+console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('API_URL:', API_URL);
+console.log('========================');
+
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
