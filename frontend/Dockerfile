@@ -35,8 +35,11 @@ RUN echo "=== Running TypeScript compilation ===" && \
 RUN echo "=== Dist contents ===" && find dist -type f -ls
 
 FROM caddy:2-alpine
-WORKDIR /app
-COPY Caddyfile ./
-COPY --from=build /app/dist /app/dist
-RUN echo "Final check:" && ls -la /app/dist/
-CMD ["caddy", "run", "--config", "Caddyfile", "--adapter", "caddyfile"]
+WORKDIR /srv
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /srv
+RUN echo "=== Final verification ===" && \
+    ls -la /srv/ && \
+    echo "=== Caddyfile contents ===" && \
+    cat /etc/caddy/Caddyfile
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

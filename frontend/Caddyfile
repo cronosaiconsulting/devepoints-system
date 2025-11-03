@@ -5,7 +5,7 @@
 }
 
 :{$PORT:3000} {
-    root * /app/dist
+    root * /srv
     encode gzip
     file_server
     try_files {path} /index.html
