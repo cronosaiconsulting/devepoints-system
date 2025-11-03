@@ -16,13 +16,12 @@ RUN printf '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-
 # Verify with multiple methods
 RUN ls -lh index.html && wc -l index.html && file index.html && grep -c "root" index.html || echo "File check done"
 
-# Build the application
+# Build the application - capture full output
 RUN echo "=== Cleaning and building ===" && \
     rm -rf dist node_modules/.vite && \
-    NODE_ENV=production npx vite build
-
-# Show what was built
-RUN echo "=== DIST FILES ===" && find dist -type f -exec ls -lh {} \;
+    NODE_ENV=production npx vite build 2>&1 | tee build-output.txt && \
+    echo "=== BUILD OUTPUT ===" && cat build-output.txt && \
+    echo "=== DIST TREE ===" && find dist -ls
 
 FROM caddy:2-alpine
 WORKDIR /app
