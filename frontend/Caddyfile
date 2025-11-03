@@ -3,7 +3,7 @@
 	auto_https off
 }
 
-:$PORT {
+:{$PORT} {
 	root * /srv
 	encode gzip
 	file_server
