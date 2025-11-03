@@ -73,12 +73,12 @@ export const adminService = {
     return result.rows;
   },
 
-  async createProduct(name: string, description: string, price: number, type: string) {
+  async createProduct(name: string, description: string, price: number, type: string, real_price?: number, max_tokens?: number) {
     const result = await pool.query(
-      `INSERT INTO products (name, description, price, type)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO products (name, description, price, real_price, max_tokens, type)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [name, description, price, type]
+      [name, description, price, real_price || price, max_tokens, type]
     );
 
     return result.rows[0];
@@ -100,6 +100,14 @@ export const adminService = {
     if (updates.price !== undefined) {
       fields.push(`price = $${paramCount++}`);
       values.push(updates.price);
+    }
+    if (updates.real_price !== undefined) {
+      fields.push(`real_price = $${paramCount++}`);
+      values.push(updates.real_price);
+    }
+    if (updates.max_tokens !== undefined) {
+      fields.push(`max_tokens = $${paramCount++}`);
+      values.push(updates.max_tokens);
     }
     if (updates.type !== undefined) {
       fields.push(`type = $${paramCount++}`);
@@ -152,16 +160,105 @@ export const adminService = {
     return result.rows[0];
   },
 
-  async getAllTransactions(limit: number = 100, offset: number = 0) {
-    const result = await pool.query(
-      `SELECT t.*, u.email, u.full_name
+  async getAllTransactions(limit: number = 100, offset: number = 0, filters?: {
+    userId?: number;
+    type?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    amountMin?: number;
+    amountMax?: number;
+  }) {
+    let query = `SELECT t.*, u.email, u.full_name
        FROM transactions t
        JOIN users u ON t.user_id = u.id
-       ORDER BY t.created_at DESC
-       LIMIT $1 OFFSET $2`,
-      [limit, offset]
-    );
+       WHERE 1=1`;
+
+    const params: any[] = [];
+    let paramCount = 1;
+
+    if (filters?.userId) {
+      query += ` AND t.user_id = $${paramCount}`;
+      params.push(filters.userId);
+      paramCount++;
+    }
+    if (filters?.type) {
+      query += ` AND t.type = $${paramCount}`;
+      params.push(filters.type);
+      paramCount++;
+    }
+    if (filters?.dateFrom) {
+      query += ` AND t.created_at >= $${paramCount}`;
+      params.push(filters.dateFrom);
+      paramCount++;
+    }
+    if (filters?.dateTo) {
+      query += ` AND t.created_at <= $${paramCount}`;
+      params.push(filters.dateTo);
+      paramCount++;
+    }
+    if (filters?.amountMin !== undefined) {
+      query += ` AND t.amount >= $${paramCount}`;
+      params.push(filters.amountMin);
+      paramCount++;
+    }
+    if (filters?.amountMax !== undefined) {
+      query += ` AND t.amount <= $${paramCount}`;
+      params.push(filters.amountMax);
+      paramCount++;
+    }
+
+    query += ` ORDER BY t.created_at DESC LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
+    params.push(limit, offset);
+
+    const result = await pool.query(query, params);
     return result.rows;
+  },
+
+  async refundTransaction(transactionId: number, reason?: string) {
+    // Get original transaction
+    const transactionResult = await pool.query(
+      'SELECT * FROM transactions WHERE id = $1',
+      [transactionId]
+    );
+
+    if (transactionResult.rows.length === 0) {
+      throw new Error('Transaction not found');
+    }
+
+    const original = transactionResult.rows[0];
+
+    if (original.refunded) {
+      throw new Error('Transaction already refunded');
+    }
+
+    if (original.type !== 'spend' && original.type !== 'admin_award') {
+      throw new Error('Only spend and admin_award transactions can be refunded');
+    }
+
+    // Create refund transaction (reverse the amount)
+    const refundAmount = original.type === 'spend' ? original.amount : -original.amount;
+    const refundType = original.type === 'spend' ? 'earn' : 'expire';
+
+    const refundResult = await pool.query(
+      `INSERT INTO transactions (user_id, amount, type, description, refund_of)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [
+        original.user_id,
+        Math.abs(original.amount),
+        refundType,
+        `Refund: ${original.description}${reason ? ` - ${reason}` : ''}`,
+        transactionId
+      ]
+    );
+
+    // Mark original as refunded
+    await pool.query(
+      'UPDATE transactions SET refunded = true WHERE id = $1',
+      [transactionId]
+    );
+
+    return refundResult.rows[0];
   },
 
   async getAllOrders(limit: number = 100, offset: number = 0) {
@@ -279,7 +376,18 @@ export const adminService = {
 
   async getAllRewards() {
     const result = await pool.query(
-      `SELECT * FROM rewards ORDER BY created_at DESC`
+      `SELECT * FROM rewards WHERE active = true ORDER BY created_at DESC`
+    );
+    return result.rows;
+  },
+
+  async searchRewards(query: string) {
+    const result = await pool.query(
+      `SELECT * FROM rewards
+       WHERE active = true AND event_title ILIKE $1
+       ORDER BY event_title
+       LIMIT 20`,
+      [`%${query}%`]
     );
     return result.rows;
   },

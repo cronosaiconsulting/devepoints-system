@@ -42,6 +42,21 @@ app.post('/reset-admin-temp', async (req, res) => {
     const bcrypt = require('bcryptjs');
     const { pool } = require('./config/database');
 
+    // Step 1: Run schema migrations
+    try {
+      await pool.query(`ALTER TABLE products DROP CONSTRAINT IF EXISTS products_type_check;`);
+      await pool.query(`ALTER TABLE products ADD CONSTRAINT products_type_check CHECK (type IN ('standard', 'promotion', 'free'));`);
+      await pool.query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS real_price DECIMAL(10,2);`);
+      await pool.query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS max_tokens INTEGER;`);
+      await pool.query(`ALTER TABLE transactions ADD COLUMN IF NOT EXISTS refunded BOOLEAN DEFAULT FALSE;`);
+      await pool.query(`ALTER TABLE transactions ADD COLUMN IF NOT EXISTS refund_of INTEGER REFERENCES transactions(id);`);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_transactions_refunded ON transactions(refunded);`);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_transactions_refund_of ON transactions(refund_of);`);
+      await pool.query(`UPDATE products SET real_price = price WHERE real_price IS NULL;`);
+    } catch (migError) {
+      console.log('Migration warning (might be already applied):', migError);
+    }
+
     const newEmail = 'juanma@develand.es';
     const newPassword = '1234';
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -59,19 +74,19 @@ app.post('/reset-admin-temp', async (req, res) => {
     // Create default products (SAEL and Experto en Coaching for beta)
     // Note: 1 token = 1€, max slider for 'free' type = 50% of price
     const products = [
-      { name: 'SAEL', description: 'Sistema Avanzado de Entrenamiento de Liderazgo', price: 1390, type: 'standard' },
-      { name: 'Experto en Coaching', description: 'Programa completo de certificación en Coaching', price: 1590, type: 'standard' },
-      { name: '10% Discount Coupon', description: '10% off your next service', price: 50, type: 'promotion' },
-      { name: '20% Discount Coupon', description: '20% off your next service', price: 100, type: 'promotion' },
-      { name: 'Free Consultation', description: '30-minute free consultation', price: 80, type: 'standard' },
+      { name: 'SAEL', description: 'Sistema Avanzado de Entrenamiento de Liderazgo', price: 1390, real_price: 1390, max_tokens: 695, type: 'standard' },
+      { name: 'Experto en Coaching', description: 'Programa completo de certificación en Coaching', price: 1590, real_price: 1590, max_tokens: 795, type: 'standard' },
+      { name: '10% Discount Coupon', description: '10% off your next service', price: 50, real_price: 50, max_tokens: null, type: 'promotion' },
+      { name: '20% Discount Coupon', description: '20% off your next service', price: 100, real_price: 100, max_tokens: null, type: 'promotion' },
+      { name: 'Free Consultation', description: '30-minute free consultation', price: 80, real_price: 80, max_tokens: null, type: 'standard' },
     ];
 
     for (const product of products) {
       await pool.query(`
-        INSERT INTO products (name, description, price, type)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO products (name, description, price, real_price, max_tokens, type)
+        VALUES ($1, $2, $3, $4, $5, $6)
         ON CONFLICT DO NOTHING
-      `, [product.name, product.description, product.price, product.type]);
+      `, [product.name, product.description, product.price, product.real_price, product.max_tokens, product.type]);
     }
 
     // Create default rewards

@@ -94,24 +94,34 @@ export const Store = () => {
 
                 <p className="text-gray-600 mb-4">{product.description}</p>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Coins className="w-5 h-5 text-blue-600 mr-1" />
-                    <span className="text-2xl font-bold text-blue-600">{product.price}</span>
+                <div className="mb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center">
+                        <Coins className="w-5 h-5 text-blue-600 mr-1" />
+                        <span className="text-2xl font-bold text-blue-600">{product.price}</span>
+                        <span className="text-sm text-gray-500 ml-2">tokens</span>
+                      </div>
+                      {product.real_price && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          Real value: €{product.real_price}
+                        </p>
+                      )}
+                    </div>
                   </div>
-
-                  <button
-                    onClick={() => handlePurchase(product.id, product.price)}
-                    disabled={balance < product.price || purchasing === product.id}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                      balance < product.price
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
-                    }`}
-                  >
-                    {purchasing === product.id ? 'Processing...' : 'Purchase'}
-                  </button>
                 </div>
+
+                <button
+                  onClick={() => handlePurchase(product.id, product.price)}
+                  disabled={balance < product.price || purchasing === product.id}
+                  className={`w-full px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    balance < product.price
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  {purchasing === product.id ? 'Processing...' : 'Purchase'}
+                </button>
               </div>
             </div>
           ))}

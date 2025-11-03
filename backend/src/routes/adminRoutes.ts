@@ -71,13 +71,15 @@ const productSchema = z.object({
   name: z.string(),
   description: z.string(),
   price: z.number().positive(),
-  type: z.enum(['discount', 'service', 'physical'])
+  real_price: z.number().positive().optional(),
+  max_tokens: z.number().positive().optional(),
+  type: z.enum(['standard', 'promotion', 'free'])
 });
 
 router.post('/products', async (req, res) => {
   try {
-    const { name, description, price, type } = productSchema.parse(req.body);
-    const product = await adminService.createProduct(name, description, price, type);
+    const { name, description, price, real_price, max_tokens, type } = productSchema.parse(req.body);
+    const product = await adminService.createProduct(name, description, price, type, real_price, max_tokens);
     res.json({ success: true, product });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -126,10 +128,31 @@ router.get('/transactions', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit as string) || 100;
     const offset = parseInt(req.query.offset as string) || 0;
-    const transactions = await adminService.getAllTransactions(limit, offset);
+    const userId = req.query.user_id ? parseInt(req.query.user_id as string) : undefined;
+    const type = req.query.type as string | undefined;
+    const dateFrom = req.query.date_from as string | undefined;
+    const dateTo = req.query.date_to as string | undefined;
+    const amountMin = req.query.amount_min ? parseInt(req.query.amount_min as string) : undefined;
+    const amountMax = req.query.amount_max ? parseInt(req.query.amount_max as string) : undefined;
+
+    const transactions = await adminService.getAllTransactions(limit, offset, {
+      userId, type, dateFrom, dateTo, amountMin, amountMax
+    });
     res.json({ success: true, transactions });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Refund transaction
+router.post('/transactions/:id/refund', async (req, res) => {
+  try {
+    const transactionId = parseInt(req.params.id);
+    const { reason } = req.body;
+    const refundTransaction = await adminService.refundTransaction(transactionId, reason);
+    res.json({ success: true, refund: refundTransaction });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -183,6 +206,16 @@ router.post('/rewards', async (req, res) => {
 router.get('/rewards', async (req, res) => {
   try {
     const rewards = await adminService.getAllRewards();
+    res.json({ success: true, rewards });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/rewards/search', async (req, res) => {
+  try {
+    const query = req.query.q as string;
+    const rewards = await adminService.searchRewards(query || '');
     res.json({ success: true, rewards });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
