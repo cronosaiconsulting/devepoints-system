@@ -56,11 +56,45 @@ app.post('/reset-admin-temp', async (req, res) => {
       VALUES ($1, $2, $3, $4, $5)
     `, [newEmail, hashedPassword, 'Admin User', referralCode, 'admin']);
 
+    // Create default products (SAEL and Experto en Coaching for beta)
+    const products = [
+      { name: 'SAEL', description: 'Sistema Avanzado de Entrenamiento de Liderazgo', price: 695, type: 'standard' },
+      { name: 'Experto en Coaching', description: 'Programa completo de certificación en Coaching', price: 795, type: 'standard' },
+      { name: '10% Discount Coupon', description: '10% off your next service', price: 50, type: 'promotion' },
+      { name: '20% Discount Coupon', description: '20% off your next service', price: 100, type: 'promotion' },
+      { name: 'Free Consultation', description: '30-minute free consultation', price: 80, type: 'standard' },
+    ];
+
+    for (const product of products) {
+      await pool.query(`
+        INSERT INTO products (name, description, price, type)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT DO NOTHING
+      `, [product.name, product.description, product.price, product.type]);
+    }
+
+    // Create default rewards
+    const rewards = [
+      { amount: 5, event_title: 'Staff Possibility', default_expiry_days: 365 },
+      { amount: 10, event_title: 'Staff Infinity', default_expiry_days: 365 },
+      { amount: 200, event_title: 'Reto 7 días', default_expiry_days: 365 }
+    ];
+
+    for (const reward of rewards) {
+      await pool.query(`
+        INSERT INTO rewards (amount, event_title, default_expiry_days)
+        VALUES ($1, $2, $3)
+        ON CONFLICT DO NOTHING
+      `, [reward.amount, reward.event_title, reward.default_expiry_days]);
+    }
+
     res.json({
       success: true,
-      message: 'Admin user reset successfully',
+      message: 'Admin user, products, and rewards created successfully',
       email: newEmail,
-      password: newPassword
+      password: newPassword,
+      products_created: products.length,
+      rewards_created: rewards.length
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
