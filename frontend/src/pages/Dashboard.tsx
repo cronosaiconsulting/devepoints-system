@@ -118,13 +118,11 @@ export const Dashboard = () => {
               <div>
                 <p className="text-gray-600 text-sm">
                   Expiran Pronto
-                  <span className="text-xs ml-1">
-                    ({(() => {
-                      const futureDate = new Date();
-                      futureDate.setDate(futureDate.getDate() + expiringSoonDays);
-                      return format(futureDate, 'dd/MM/yyyy');
-                    })()})
-                  </span>
+                  {expiring.length > 0 && expiring[0].expires_at && (
+                    <span className="text-xs ml-1">
+                      (próximo: {format(new Date(expiring[0].expires_at), 'dd/MM/yyyy')})
+                    </span>
+                  )}
                 </p>
                 <p className="text-3xl font-bold mt-2">
                   {expiring.reduce((sum, item) => sum + parseInt(item.expiring_amount), 0)}
