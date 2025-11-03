@@ -11,24 +11,10 @@ COPY vite.config.ts tsconfig.json tsconfig.node.json tailwind.config.js postcss.
 COPY src ./src
 
 # Create index.html directly to avoid copy corruption
-RUN cat > index.html << 'EOF'
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DevePoints - Loyalty & Rewards System</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
-EOF
+RUN printf '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <link rel="icon" type="image/svg+xml" href="/vite.svg" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>DevePoints - Loyalty & Rewards System</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.tsx"></script>\n  </body>\n</html>\n' > index.html
 
 # Verify
-RUN echo "index.html created:" && cat index.html
+RUN cat index.html
 
 # Build the application
 RUN echo "=== Running Vite build with verbose output ===" && npx vite build --logLevel info
