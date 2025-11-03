@@ -9,9 +9,17 @@ RUN npm install
 COPY . .
 
 # Verify what we have
-RUN echo "=== Files in root ===" && ls -la && \
+RUN echo "=== ALL root files ===" && ls -la && \
     echo "=== Source files ===" && find src -type f && \
-    echo "=== Config files ===" && ls -la *.* 2>/dev/null || true
+    echo "=== Critical config files ===" && \
+    (test -f index.html && echo "✓ index.html" || echo "✗ index.html MISSING") && \
+    (test -f vite.config.ts && echo "✓ vite.config.ts" || echo "✗ vite.config.ts MISSING") && \
+    (test -f tsconfig.json && echo "✓ tsconfig.json" || echo "✗ tsconfig.json MISSING") && \
+    (test -f tsconfig.node.json && echo "✓ tsconfig.node.json" || echo "✗ tsconfig.node.json MISSING") && \
+    (test -f tailwind.config.js && echo "✓ tailwind.config.js" || echo "✗ tailwind.config.js MISSING") && \
+    (test -f postcss.config.js && echo "✓ postcss.config.js" || echo "✗ postcss.config.js MISSING") && \
+    echo "=== Checking index.html content ===" && head -5 index.html && \
+    echo "=== Checking vite.config.ts ===" && cat vite.config.ts
 
 # Build - capture full output to file
 RUN echo "=== Running TypeScript compilation ===" && \
