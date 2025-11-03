@@ -12,11 +12,11 @@ COPY src ./src
 COPY tailwind.config.js postcss.config.js ./
 
 # Verify source files are present
-RUN echo "Checking src files:" && ls -la src/ && ls -la src/pages/
+RUN echo "Checking src files:" && ls -la src/ && test -f src/main.tsx && echo "main.tsx exists" || echo "ERROR: main.tsx missing!"
+RUN echo "Checking index.html:" && cat index.html
 
 # Build the application
-RUN echo "=== Running TypeScript compiler ===" && npx tsc --noEmit || echo "TSC had errors but continuing..."
-RUN echo "=== Running Vite build ===" && npx vite build
+RUN echo "=== Running Vite build with verbose output ===" && npx vite build --logLevel info
 
 # Show what was built
 RUN echo "=== DIST FILES ===" && find dist -type f -exec ls -lh {} \;
