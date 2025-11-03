@@ -45,9 +45,21 @@ export const Dashboard = () => {
       link.download = `cupon-${orderId}.pdf`;
       link.click();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error downloading coupon:', error);
-      alert('Error al descargar el cupón');
+      // Try to read the error message from the blob
+      if (error.response?.data instanceof Blob) {
+        const text = await error.response.data.text();
+        console.error('Server error:', text);
+        try {
+          const errorData = JSON.parse(text);
+          alert(`Error al descargar el cupón: ${errorData.error}`);
+        } catch {
+          alert(`Error al descargar el cupón: ${text}`);
+        }
+      } else {
+        alert('Error al descargar el cupón');
+      }
     }
   };
 

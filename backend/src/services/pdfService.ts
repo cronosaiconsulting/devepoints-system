@@ -1,5 +1,4 @@
-import PDFDocument from 'pdfkit';
-import { PassThrough } from 'stream';
+const PDFDocument = require('pdfkit');
 
 export interface CouponData {
   orderId: number;
@@ -24,7 +23,7 @@ export const pdfService = {
           const pdfData = Buffer.concat(buffers);
           resolve(pdfData);
         });
-        doc.on('error', (err) => {
+        doc.on('error', (err: any) => {
           console.error('PDFDocument error:', err);
           reject(err);
         });
@@ -159,7 +158,7 @@ export const pdfService = {
         .text('DEVELAND', 0, 400, { align: 'center' });
 
         doc.end();
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error creating PDF:', err);
         reject(err);
       }
