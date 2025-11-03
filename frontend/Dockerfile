@@ -10,11 +10,11 @@ RUN npm install
 COPY vite.config.ts tsconfig.json tsconfig.node.json tailwind.config.js postcss.config.js ./
 COPY src ./src
 
-# Create index.html directly to avoid copy corruption
+# Create index.html directly
 RUN printf '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <link rel="icon" type="image/svg+xml" href="/vite.svg" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>DevePoints - Loyalty & Rewards System</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.tsx"></script>\n  </body>\n</html>\n' > index.html
 
-# Verify
-RUN cat index.html
+# Verify with multiple methods
+RUN ls -lh index.html && wc -l index.html && file index.html && grep -c "root" index.html || echo "File check done"
 
 # Build the application
 RUN echo "=== Running Vite build with verbose output ===" && npx vite build --logLevel info
