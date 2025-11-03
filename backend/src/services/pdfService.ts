@@ -15,15 +15,19 @@ export interface CouponData {
 export const pdfService = {
   async generateCoupon(data: CouponData): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      const doc = new PDFDocument({ size: 'A4', margin: 50 });
-      const buffers: Buffer[] = [];
+      try {
+        const doc = new PDFDocument({ size: 'A4', margin: 50 });
+        const buffers: Buffer[] = [];
 
-      doc.on('data', buffers.push.bind(buffers));
-      doc.on('end', () => {
-        const pdfData = Buffer.concat(buffers);
-        resolve(pdfData);
-      });
-      doc.on('error', reject);
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => {
+          const pdfData = Buffer.concat(buffers);
+          resolve(pdfData);
+        });
+        doc.on('error', (err) => {
+          console.error('PDFDocument error:', err);
+          reject(err);
+        });
 
       // Header with Develand branding
       doc
@@ -154,7 +158,11 @@ export const pdfService = {
         .fillColor('#eff6ff', 0.3)
         .text('DEVELAND', 0, 400, { align: 'center' });
 
-      doc.end();
+        doc.end();
+      } catch (err) {
+        console.error('Error creating PDF:', err);
+        reject(err);
+      }
     });
   },
 };
