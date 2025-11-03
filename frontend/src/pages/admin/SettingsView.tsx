@@ -61,8 +61,14 @@ export const SettingsView = () => {
       tokens_per_euro: 'Tipo de Cambio (Tokens = 1€)',
       expiring_soon_days: 'Días para "Expiran Pronto"',
       referral_bonus_new_user: 'Bonificación para Nuevos Usuarios Referidos',
+      logo_url: 'URL del Logo Principal',
     };
     return labels[key] || key;
+  };
+
+  const getInputType = (key: string) => {
+    if (key === 'logo_url') return 'url';
+    return 'number';
   };
 
   if (loading) {
@@ -99,12 +105,21 @@ export const SettingsView = () => {
                       {getSettingLabel(setting.key)}
                     </label>
                     <p className="text-sm text-gray-600 mb-3">{setting.description}</p>
+                    {setting.key === 'logo_url' && (
+                      <p className="text-xs text-gray-500 mb-2">
+                        💡 Usar <a href="https://imgur.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">IMGUR</a> para subir imágenes.
+                        <span className="italic"> La carga de archivos está en fase de desarrollo.</span>
+                      </p>
+                    )}
                     <div className="flex items-center space-x-3">
                       <input
-                        type="number"
+                        type={getInputType(setting.key)}
                         value={editedValues[setting.key] || ''}
                         onChange={(e) => handleValueChange(setting.key, e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-32"
+                        className={`px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          setting.key === 'logo_url' ? 'flex-1 max-w-md' : 'w-32'
+                        }`}
+                        placeholder={setting.key === 'logo_url' ? 'https://i.imgur.com/...' : ''}
                         disabled={saving}
                       />
                       <button

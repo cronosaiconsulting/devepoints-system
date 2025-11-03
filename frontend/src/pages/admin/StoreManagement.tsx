@@ -283,6 +283,21 @@ export const StoreManagement = () => {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">URL de Imagen</label>
+                  <input
+                    type="url"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    value={productForm.imageUrl}
+                    onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
+                    placeholder="https://i.imgur.com/..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    💡 Usar <a href="https://imgur.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">IMGUR</a> para subir imágenes.
+                    <span className="italic"> La carga de archivos está en fase de desarrollo.</span>
+                  </p>
+                </div>
+
                 {productForm.type === 'standard' && (
                   <div className="border-t pt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Ofertas Múltiples de Tokens</label>
@@ -420,6 +435,10 @@ export const StoreManagement = () => {
                   updates.token_offers = editingProduct.token_offers;
                 }
 
+                if (editingProduct.image_url !== undefined) {
+                  updates.image_url = editingProduct.image_url;
+                }
+
                 handleUpdate(editingProduct.id, updates);
               }} className="space-y-4">
                 <div>
@@ -481,6 +500,21 @@ export const StoreManagement = () => {
                     value={editingProduct.price}
                     onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">URL de Imagen</label>
+                  <input
+                    type="url"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    value={editingProduct.image_url || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, image_url: e.target.value })}
+                    placeholder="https://i.imgur.com/..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    💡 Usar <a href="https://imgur.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">IMGUR</a> para subir imágenes.
+                    <span className="italic"> La carga de archivos está en fase de desarrollo.</span>
+                  </p>
                 </div>
 
                 {editingProduct.type === 'standard' && (

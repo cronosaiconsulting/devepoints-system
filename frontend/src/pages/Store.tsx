@@ -129,6 +129,29 @@ export const Store = () => {
 
             return (
               <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                {/* Product Image */}
+                {product.image_url ? (
+                  <div className="h-48 overflow-hidden bg-gray-100">
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to placeholder if image fails to load
+                        e.currentTarget.src = '/logo_develand.png';
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="h-48 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+                    <img
+                      src="/logo_develand.png"
+                      alt="Develand"
+                      className="h-24 w-auto opacity-50"
+                    />
+                  </div>
+                )}
+
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
@@ -141,7 +164,6 @@ export const Store = () => {
                         {product.type === 'standard' ? 'Estándar' : product.type === 'promotion' ? 'Promoción' : 'Tokens'}
                       </span>
                     </div>
-                    <ShoppingBag className="w-8 h-8 text-gray-400" />
                   </div>
 
                   <p className="text-gray-600 mb-4">{product.description}</p>
