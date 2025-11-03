@@ -65,14 +65,15 @@ router.get('/orders/:orderId/coupon', async (req, res) => {
     }
 
     const order = orderResult.rows[0];
-    const productPrice = order.real_price || order.price;
-    const remainingPrice = productPrice - order.coins_spent;
+    const productPrice = parseFloat(order.real_price || order.price);
+    const coinsSpent = parseInt(order.coins_spent);
+    const remainingPrice = productPrice - coinsSpent;
 
     const couponData = {
       orderId: order.id,
       productName: order.product_name,
       productDescription: order.product_description,
-      tokensSpent: order.coins_spent,
+      tokensSpent: coinsSpent,
       productPrice: productPrice,
       remainingPrice: remainingPrice,
       customerName: order.full_name,

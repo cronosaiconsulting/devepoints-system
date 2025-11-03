@@ -96,8 +96,10 @@ export const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Transacciones</p>
-                <p className="text-3xl font-bold mt-2">{history.length}</p>
+                <p className="text-gray-600 text-sm">Tokens Ganados</p>
+                <p className="text-3xl font-bold mt-2">
+                  {history.filter(tx => ['earn', 'admin_award', 'referral'].includes(tx.type)).reduce((sum, tx) => sum + tx.amount, 0)}
+                </p>
               </div>
               <TrendingUp className="w-12 h-12 text-green-500" />
             </div>
@@ -106,7 +108,14 @@ export const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Expiran Pronto</p>
+                <p className="text-gray-600 text-sm">
+                  Expiran Pronto
+                  {expiring.length > 0 && (
+                    <span className="text-xs ml-1">
+                      ({format(new Date(expiring[0].expires_at), 'dd/MM/yyyy')})
+                    </span>
+                  )}
+                </p>
                 <p className="text-3xl font-bold mt-2">
                   {expiring.reduce((sum, item) => sum + parseInt(item.expiring_amount), 0)}
                 </p>
@@ -204,7 +213,7 @@ export const Dashboard = () => {
                             : 'bg-green-100 text-green-700'
                         }`}
                       >
-                        {tx.type === 'earn' ? 'ganar' : tx.type === 'spend' ? 'compra' : tx.type === 'admin_award' ? 'premio' : tx.type === 'referral' ? 'referido' : 'expirar'}
+                        {tx.type === 'earn' ? 'ganar' : tx.type === 'spend' ? 'compra' : tx.type === 'admin_award' ? 'recompensa' : tx.type === 'referral' ? 'referido' : 'expirar'}
                       </span>
                     </td>
                     <td className="py-3 px-4">{tx.description}</td>
