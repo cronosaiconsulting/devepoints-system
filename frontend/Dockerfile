@@ -13,10 +13,13 @@ RUN echo "=== Files in root ===" && ls -la && \
     echo "=== Source files ===" && find src -type f && \
     echo "=== Config files ===" && ls -la *.* 2>/dev/null || true
 
-# Build with full output
-RUN npm run build 2>&1 | tee build.log && \
-    echo "=== Build log ===" && cat build.log && \
-    echo "=== Build exit code: $? ==="
+# Build - run tsc and vite separately to see where it fails
+RUN echo "=== Running TypeScript compilation ===" && \
+    npx tsc --noEmit && \
+    echo "=== TypeScript OK ===" && \
+    echo "=== Running Vite build ===" && \
+    npx vite build && \
+    echo "=== Vite build complete ==="
 
 # Show detailed results
 RUN echo "=== Dist contents ===" && find dist -type f -ls
