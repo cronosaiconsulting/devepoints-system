@@ -39,8 +39,9 @@ export const userAPI = {
 
 export const storeAPI = {
   getProducts: () => api.get('/store/products'),
-  purchase: (productId: number) => api.post('/store/purchase', { productId }),
-  getOrders: () => api.get('/store/orders')
+  purchase: (productId: number, tokensSpent?: number) => api.post('/store/purchase', { productId, tokensSpent }),
+  getOrders: () => api.get('/store/orders'),
+  downloadCoupon: (orderId: number) => api.get(`/store/orders/${orderId}/coupon`, { responseType: 'blob' })
 };
 
 export const adminAPI = {

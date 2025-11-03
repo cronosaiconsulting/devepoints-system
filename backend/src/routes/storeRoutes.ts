@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { storeService } from '../services/storeService';
+import { pdfService } from '../services/pdfService';
+import { pool } from '../config/database';
 import { z } from 'zod';
 
 const router = Router();
@@ -17,13 +19,14 @@ router.get('/products', async (req, res) => {
 });
 
 const purchaseSchema = z.object({
-  productId: z.number()
+  productId: z.number(),
+  tokensSpent: z.number().positive().optional()
 });
 
 router.post('/purchase', async (req, res) => {
   try {
-    const { productId } = purchaseSchema.parse(req.body);
-    const order = await storeService.purchaseProduct(req.user!.userId, productId);
+    const { productId, tokensSpent } = purchaseSchema.parse(req.body);
+    const order = await storeService.purchaseProduct(req.user!.userId, productId, tokensSpent);
     res.json({ success: true, order });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -35,6 +38,54 @@ router.get('/orders', async (req, res) => {
     const orders = await storeService.getOrderHistory(req.user!.userId);
     res.json({ success: true, orders });
   } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/orders/:orderId/coupon', async (req, res) => {
+  try {
+    const orderId = parseInt(req.params.orderId);
+    const userId = req.user!.userId;
+
+    // Get order details
+    const orderResult = await pool.query(
+      `SELECT o.id, o.coins_spent, o.created_at, o.user_id,
+              p.name as product_name, p.description as product_description,
+              p.real_price, p.price,
+              u.full_name
+       FROM orders o
+       JOIN products p ON o.product_id = p.id
+       JOIN users u ON o.user_id = u.id
+       WHERE o.id = $1 AND o.user_id = $2`,
+      [orderId, userId]
+    );
+
+    if (orderResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    const order = orderResult.rows[0];
+    const productPrice = order.real_price || order.price;
+    const remainingPrice = productPrice - order.coins_spent;
+
+    const couponData = {
+      orderId: order.id,
+      productName: order.product_name,
+      productDescription: order.product_description,
+      tokensSpent: order.coins_spent,
+      productPrice: productPrice,
+      remainingPrice: remainingPrice,
+      customerName: order.full_name,
+      purchaseDate: new Date(order.created_at),
+    };
+
+    const pdfBuffer = await pdfService.generateCoupon(couponData);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=cupon-${orderId}.pdf`);
+    res.send(pdfBuffer);
+  } catch (error: any) {
+    console.error('PDF generation error:', error);
     res.status(500).json({ error: error.message });
   }
 });

@@ -10,7 +10,7 @@ export const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2 text-xl font-bold">
-            <img src="/logo_develand.png" alt="Develand" className="w-8 h-8 object-contain" />
+            <img src="/logo_develand.png" alt="Develand" className="w-12 h-12 object-contain" />
             <span>Tokens Develand</span>
           </Link>
 

@@ -39,7 +39,7 @@ export const Store = () => {
     }
   };
 
-  const handlePurchase = async (productId: number, price: number) => {
+  const handlePurchase = async (productId: number, price: number, isFree: boolean) => {
     if (balance < price) {
       alert('¡Saldo insuficiente!');
       return;
@@ -47,7 +47,8 @@ export const Store = () => {
 
     setPurchasing(productId);
     try {
-      await storeAPI.purchase(productId);
+      // For free products, pass the slider value as tokensSpent
+      await storeAPI.purchase(productId, isFree ? price : undefined);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
       // Reload balance after purchase
@@ -180,7 +181,7 @@ export const Store = () => {
                   )}
 
                   <button
-                    onClick={() => handlePurchase(product.id, isFree ? sliderValue : product.price)}
+                    onClick={() => handlePurchase(product.id, isFree ? sliderValue : product.price, isFree)}
                     disabled={!canPurchase || purchasing === product.id}
                     className={`w-full px-4 py-2 rounded-lg font-semibold transition-colors ${
                       !canPurchase
