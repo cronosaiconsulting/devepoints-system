@@ -6,21 +6,29 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 
-# Copy all source files explicitly
-COPY index.html ./
-COPY vite.config.ts ./
-COPY tsconfig.json ./
-COPY tsconfig.node.json ./
-COPY tailwind.config.js ./
-COPY postcss.config.js ./
+# Copy config files
+COPY vite.config.ts tsconfig.json tsconfig.node.json tailwind.config.js postcss.config.js ./
 COPY src ./src
 
-# Verify files
-RUN echo "=== Verifying copied files ===" && \
-    ls -lh index.html && \
-    wc -l index.html && \
-    echo "First 5 lines:" && head -5 index.html && \
-    echo "Last 5 lines:" && tail -5 index.html
+# Create index.html directly to avoid copy corruption
+RUN cat > index.html << 'EOF'
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevePoints - Loyalty & Rewards System</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+EOF
+
+# Verify
+RUN echo "index.html created:" && cat index.html
 
 # Build the application
 RUN echo "=== Running Vite build with verbose output ===" && npx vite build --logLevel info
