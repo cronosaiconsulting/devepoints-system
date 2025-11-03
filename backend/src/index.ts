@@ -36,6 +36,37 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Temporary admin reset endpoint - REMOVE AFTER USE
+app.post('/reset-admin-temp', async (req, res) => {
+  try {
+    const bcrypt = require('bcryptjs');
+    const { pool } = require('./config/database');
+
+    const newEmail = 'juanma@develand.es';
+    const newPassword = '1234';
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const referralCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+
+    // Delete existing admin
+    await pool.query(`DELETE FROM users WHERE role = 'admin'`);
+
+    // Create new admin
+    await pool.query(`
+      INSERT INTO users (email, password_hash, full_name, referral_code, role)
+      VALUES ($1, $2, $3, $4, $5)
+    `, [newEmail, hashedPassword, 'Admin User', referralCode, 'admin']);
+
+    res.json({
+      success: true,
+      message: 'Admin user reset successfully',
+      email: newEmail,
+      password: newPassword
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
