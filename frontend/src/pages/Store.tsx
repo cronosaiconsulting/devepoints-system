@@ -9,6 +9,7 @@ export const Store = () => {
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState<number | null>(null);
   const [success, setSuccess] = useState(false);
+  const [sliderValues, setSliderValues] = useState<{[key: number]: number}>({});
 
   useEffect(() => {
     loadData();
@@ -22,6 +23,15 @@ export const Store = () => {
       ]);
       setProducts(productsRes.data.products);
       setBalance(balanceRes.data.balance);
+
+      // Initialize slider values for free products
+      const initialSliders: {[key: number]: number} = {};
+      productsRes.data.products.forEach((product: any) => {
+        if (product.type === 'free') {
+          initialSliders[product.id] = 0;
+        }
+      });
+      setSliderValues(initialSliders);
     } catch (error) {
       console.error('Error loading store data:', error);
     } finally {
@@ -31,7 +41,7 @@ export const Store = () => {
 
   const handlePurchase = async (productId: number, price: number) => {
     if (balance < price) {
-      alert('Insufficient balance!');
+      alert('¡Saldo insuficiente!');
       return;
     }
 
@@ -40,9 +50,12 @@ export const Store = () => {
       await storeAPI.purchase(productId);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
+      // Reload balance after purchase
+      const balanceRes = await userAPI.getBalance();
+      setBalance(balanceRes.data.balance);
       await loadData();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Purchase failed');
+      alert(error.response?.data?.error || '¡Compra fallida!');
     } finally {
       setPurchasing(null);
     }
@@ -53,7 +66,7 @@ export const Store = () => {
       <>
         <Navbar />
         <div className="flex items-center justify-center h-screen">
-          <div className="text-xl">Loading...</div>
+          <div className="text-xl">Cargando...</div>
         </div>
       </>
     );
@@ -64,7 +77,7 @@ export const Store = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Store</h1>
+          <h1 className="text-3xl font-bold">Tienda</h1>
           <div className="flex items-center bg-blue-100 px-4 py-2 rounded-lg">
             <Coins className="w-5 h-5 text-blue-600 mr-2" />
             <span className="font-semibold text-blue-800">{balance} Tokens Develand</span>
@@ -74,60 +87,97 @@ export const Store = () => {
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 flex items-center">
             <CheckCircle className="w-5 h-5 mr-2" />
-            Purchase successful!
+            ¡Compra exitosa!
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                    <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-blue-100 text-blue-800">
-                      {product.type}
-                    </span>
+          {products.map((product) => {
+            const isFree = product.type === 'free';
+            const sliderValue = sliderValues[product.id] || 0;
+            const maxSlider = product.max_tokens || 0;
+            const canPurchase = isFree ? sliderValue > 0 && sliderValue <= balance : balance >= product.price;
+
+            return (
+              <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold mb-2">{product.name}</h3>
+                      <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${
+                        product.type === 'standard' ? 'bg-blue-100 text-blue-800' :
+                        product.type === 'promotion' ? 'bg-green-100 text-green-800' :
+                        'bg-purple-100 text-purple-800'
+                      }`}>
+                        {product.type === 'standard' ? 'Estándar' : product.type === 'promotion' ? 'Promoción' : 'Gratis'}
+                      </span>
+                    </div>
+                    <ShoppingBag className="w-8 h-8 text-gray-400" />
                   </div>
-                  <ShoppingBag className="w-8 h-8 text-gray-400" />
-                </div>
 
-                <p className="text-gray-600 mb-4">{product.description}</p>
+                  <p className="text-gray-600 mb-4">{product.description}</p>
 
-                <div className="mb-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center mb-1">
-                        <span className="text-3xl font-bold text-blue-600">€{product.real_price || product.price}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Coins className="w-4 h-4 text-gray-500 mr-1" />
-                        <span>{product.price} Tokens Develand</span>
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center mb-1">
+                          <span className="text-3xl font-bold text-blue-600">€{product.real_price || product.price}</span>
+                        </div>
+                        {!isFree ? (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Coins className="w-4 h-4 text-gray-500 mr-1" />
+                            <span>{product.price} Tokens Develand</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center text-sm text-purple-600">
+                            <span>Máx: {maxSlider} tokens</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <button
-                  onClick={() => handlePurchase(product.id, product.price)}
-                  disabled={balance < product.price || purchasing === product.id}
-                  className={`w-full px-4 py-2 rounded-lg font-semibold transition-colors ${
-                    balance < product.price
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  {purchasing === product.id ? 'Processing...' : 'Purchase'}
-                </button>
+                  {isFree && (
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Tokens a gastar: {sliderValue}
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max={maxSlider}
+                        value={sliderValue}
+                        onChange={(e) => setSliderValues({...sliderValues, [product.id]: parseInt(e.target.value)})}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0</span>
+                        <span>{maxSlider}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => handlePurchase(product.id, isFree ? sliderValue : product.price)}
+                    disabled={!canPurchase || purchasing === product.id}
+                    className={`w-full px-4 py-2 rounded-lg font-semibold transition-colors ${
+                      !canPurchase
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    {purchasing === product.id ? 'Procesando...' : 'Comprar'}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {products.length === 0 && (
           <div className="text-center py-12">
             <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 text-lg">No products available at the moment</p>
+            <p className="text-gray-600 text-lg">No hay productos disponibles en este momento</p>
           </div>
         )}
       </div>

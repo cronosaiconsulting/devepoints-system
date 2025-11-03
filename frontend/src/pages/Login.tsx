@@ -53,7 +53,7 @@ export const Login = () => {
         </div>
 
         <h2 className="text-2xl font-semibold text-center mb-6">
-          {isLogin ? 'Welcome Back' : 'Create Account'}
+          {isLogin ? 'Bienvenido a la tienda de tokens de Develand' : 'Crear Cuenta'}
         </h2>
 
         {error && (
@@ -66,7 +66,7 @@ export const Login = () => {
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
+                Nombre Completo
               </label>
               <input
                 type="text"
@@ -79,7 +79,7 @@ export const Login = () => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
             <input
               type="email"
               required
@@ -90,7 +90,7 @@ export const Login = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
             <input
               type="password"
               required
@@ -103,7 +103,7 @@ export const Login = () => {
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Referral Code (Optional)
+                Código de Referido (Opcional)
               </label>
               <input
                 type="text"
@@ -119,17 +119,17 @@ export const Login = () => {
             disabled={loading}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Please wait...' : isLogin ? 'Login' : 'Register'}
+            {loading ? 'Espere por favor...' : isLogin ? 'Iniciar Sesión' : 'Registrarse'}
           </button>
         </form>
 
         <p className="text-center mt-6 text-gray-600">
-          {isLogin ? "Don't have an account? " : 'Already have an account? '}
+          {isLogin ? "¿No tienes cuenta? " : '¿Ya tienes cuenta? '}
           <button
             onClick={() => setIsLogin(!isLogin)}
             className="text-blue-600 font-semibold hover:underline"
           >
-            {isLogin ? 'Register' : 'Login'}
+            {isLogin ? 'Regístrate' : 'Inicia Sesión'}
           </button>
         </p>
       </div>

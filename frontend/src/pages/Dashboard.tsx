@@ -37,7 +37,7 @@ export const Dashboard = () => {
       <>
         <Navbar />
         <div className="flex items-center justify-center h-screen">
-          <div className="text-xl">Loading...</div>
+          <div className="text-xl">Cargando...</div>
         </div>
       </>
     );
@@ -47,14 +47,14 @@ export const Dashboard = () => {
     <>
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-8">Panel de Control</h1>
 
         {/* Balance Card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm">Current Balance</p>
+                <p className="text-blue-100 text-sm">Saldo Actual</p>
                 <p className="text-4xl font-bold mt-2">{balance}</p>
                 <p className="text-blue-100 text-sm mt-1">Tokens Develand</p>
               </div>
@@ -65,7 +65,7 @@ export const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Transactions</p>
+                <p className="text-gray-600 text-sm">Total Transacciones</p>
                 <p className="text-3xl font-bold mt-2">{history.length}</p>
               </div>
               <TrendingUp className="w-12 h-12 text-green-500" />
@@ -75,7 +75,7 @@ export const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Expiring Soon</p>
+                <p className="text-gray-600 text-sm">Expiran Pronto</p>
                 <p className="text-3xl font-bold mt-2">
                   {expiring.reduce((sum, item) => sum + parseInt(item.expiring_amount), 0)}
                 </p>
@@ -91,12 +91,12 @@ export const Dashboard = () => {
             <div className="flex items-start">
               <AlertCircle className="w-6 h-6 text-yellow-600 mr-3 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-yellow-800">Coins Expiring Soon!</h3>
+                <h3 className="font-semibold text-yellow-800">¡Tokens por Expirar Pronto!</h3>
                 <div className="mt-2 space-y-1">
                   {expiring.map((item, idx) => (
                     <p key={idx} className="text-yellow-700">
-                      <strong>{item.expiring_amount}</strong> Tokens Develand expire on{' '}
-                      {format(new Date(item.expires_at), 'MMM dd, yyyy')}
+                      <strong>{item.expiring_amount}</strong> Tokens Develand expiran el{' '}
+                      {format(new Date(item.expires_at), 'dd MMM yyyy')}
                     </p>
                   ))}
                 </div>
@@ -107,22 +107,22 @@ export const Dashboard = () => {
 
         {/* Transaction History */}
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Transaction History</h2>
+          <h2 className="text-2xl font-bold mb-4">Historial de Transacciones</h2>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 px-4">Date</th>
-                  <th className="text-left py-3 px-4">Type</th>
-                  <th className="text-left py-3 px-4">Description</th>
-                  <th className="text-right py-3 px-4">Amount</th>
-                  <th className="text-left py-3 px-4">Expires</th>
+                  <th className="text-left py-3 px-4">Fecha</th>
+                  <th className="text-left py-3 px-4">Tipo</th>
+                  <th className="text-left py-3 px-4">Descripción</th>
+                  <th className="text-right py-3 px-4">Cantidad</th>
+                  <th className="text-left py-3 px-4">Expira</th>
                 </tr>
               </thead>
               <tbody>
                 {history.map((tx) => (
                   <tr key={tx.id} className="border-b hover:bg-gray-50">
-                    <td className="py-3 px-4">{format(new Date(tx.created_at), 'MMM dd, yyyy')}</td>
+                    <td className="py-3 px-4">{format(new Date(tx.created_at), 'dd MMM yyyy')}</td>
                     <td className="py-3 px-4">
                       <span
                         className={`px-2 py-1 rounded text-xs font-semibold ${
@@ -131,7 +131,7 @@ export const Dashboard = () => {
                             : 'bg-green-100 text-green-700'
                         }`}
                       >
-                        {tx.type}
+                        {tx.type === 'earn' ? 'ganar' : tx.type === 'spend' ? 'gastar' : tx.type === 'admin_award' ? 'premio' : tx.type === 'referral' ? 'referido' : 'expirar'}
                       </span>
                     </td>
                     <td className="py-3 px-4">{tx.description}</td>
@@ -141,7 +141,7 @@ export const Dashboard = () => {
                       {tx.type === 'spend' || tx.type === 'expire' ? '-' : '+'}{tx.amount}
                     </td>
                     <td className="py-3 px-4">
-                      {tx.expires_at ? format(new Date(tx.expires_at), 'MMM dd, yyyy') : '-'}
+                      {tx.expires_at ? format(new Date(tx.expires_at), 'dd MMM yyyy') : '-'}
                     </td>
                   </tr>
                 ))}

@@ -17,15 +17,15 @@ export const Navbar = () => {
           <div className="flex items-center space-x-6">
             <Link to="/dashboard" className="flex items-center space-x-1 hover:text-blue-200">
               <LayoutDashboard className="w-5 h-5" />
-              <span>Dashboard</span>
+              <span>Panel</span>
             </Link>
             <Link to="/store" className="flex items-center space-x-1 hover:text-blue-200">
               <ShoppingBag className="w-5 h-5" />
-              <span>Store</span>
+              <span>Tienda</span>
             </Link>
             <Link to="/referrals" className="flex items-center space-x-1 hover:text-blue-200">
               <Gift className="w-5 h-5" />
-              <span>Referrals</span>
+              <span>Referidos</span>
             </Link>
             {isAdmin && (
               <Link to="/admin" className="flex items-center space-x-1 hover:text-blue-200">
@@ -40,7 +40,7 @@ export const Navbar = () => {
                 className="flex items-center space-x-1 hover:text-blue-200"
               >
                 <LogOut className="w-5 h-5" />
-                <span>Logout</span>
+                <span>Salir</span>
               </button>
             </div>
           </div>

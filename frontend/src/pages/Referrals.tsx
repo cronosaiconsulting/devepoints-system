@@ -33,13 +33,13 @@ export const Referrals = () => {
     <>
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Referral Program</h1>
+        <h1 className="text-3xl font-bold mb-8">Programa de Referidos</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm">Total Referrals</p>
+                <p className="text-purple-100 text-sm">Total Referidos</p>
                 <p className="text-4xl font-bold mt-2">{stats.total_referrals}</p>
               </div>
               <Users className="w-16 h-16 text-purple-200" />
@@ -49,7 +49,7 @@ export const Referrals = () => {
           <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Total Earned</p>
+                <p className="text-green-100 text-sm">Total Ganado</p>
                 <p className="text-4xl font-bold mt-2">{stats.total_earned}</p>
                 <p className="text-green-100 text-sm mt-1">Tokens Develand</p>
               </div>
@@ -61,11 +61,11 @@ export const Referrals = () => {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="flex items-center mb-6">
             <Gift className="w-8 h-8 text-blue-600 mr-3" />
-            <h2 className="text-2xl font-bold">Your Referral Link</h2>
+            <h2 className="text-2xl font-bold">Tu Enlace de Referido</h2>
           </div>
 
           <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mb-6">
-            <p className="text-sm text-gray-600 mb-2">Share this link with your friends:</p>
+            <p className="text-sm text-gray-600 mb-2">Comparte este enlace con tus amigos:</p>
             <div className="flex items-center space-x-2">
               <input
                 type="text"
@@ -78,7 +78,7 @@ export const Referrals = () => {
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 flex items-center space-x-2"
               >
                 {copied ? <CheckCircle className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                <span>{copied ? 'Copied!' : 'Copy'}</span>
+                <span>{copied ? '¡Copiado!' : 'Copiar'}</span>
               </button>
             </div>
           </div>
