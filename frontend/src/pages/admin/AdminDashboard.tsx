@@ -28,7 +28,7 @@ export const AdminDashboard = () => {
       <div className="flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl">Loading...</div>
+          <div className="text-xl">Cargando...</div>
         </div>
       </div>
     );
@@ -40,8 +40,8 @@ export const AdminDashboard = () => {
 
       <div className="flex-1 p-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Welcome to the Tokens Develand administration panel</p>
+          <h1 className="text-3xl font-bold mb-2">Panel de Administración</h1>
+          <p className="text-gray-600">Bienvenido al panel de administración de Tokens Develand</p>
         </div>
 
         {/* Stats Grid */}
@@ -49,7 +49,7 @@ export const AdminDashboard = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Users</p>
+                <p className="text-gray-600 text-sm">Total Usuarios</p>
                 <p className="text-3xl font-bold mt-2">{stats.totalUsers}</p>
               </div>
               <Users className="w-12 h-12 text-blue-500" />
@@ -59,7 +59,7 @@ export const AdminDashboard = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Tokens Issued</p>
+                <p className="text-gray-600 text-sm">Tokens Emitidos</p>
                 <p className="text-3xl font-bold mt-2">{stats.totalCoinsIssued} tokens</p>
               </div>
               <TrendingUp className="w-12 h-12 text-green-500" />
@@ -69,7 +69,7 @@ export const AdminDashboard = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Tokens Spent</p>
+                <p className="text-gray-600 text-sm">Tokens Gastados</p>
                 <p className="text-3xl font-bold mt-2">{stats.totalCoinsSpent} tokens</p>
               </div>
               <Coins className="w-12 h-12 text-purple-500" />
@@ -79,7 +79,7 @@ export const AdminDashboard = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Orders</p>
+                <p className="text-gray-600 text-sm">Total Pedidos</p>
                 <p className="text-3xl font-bold mt-2">{stats.totalOrders}</p>
               </div>
               <ShoppingBag className="w-12 h-12 text-orange-500" />
@@ -89,22 +89,22 @@ export const AdminDashboard = () => {
 
         {/* Quick Links */}
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-bold mb-4">Acciones Rápidas</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link to="/admin/users" className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
               <Users className="w-8 h-8 text-blue-600 mb-2" />
-              <h3 className="font-semibold">Manage Users</h3>
-              <p className="text-sm text-gray-600">View and award tokens to users</p>
+              <h3 className="font-semibold">Gestionar Usuarios</h3>
+              <p className="text-sm text-gray-600">Ver y otorgar tokens a usuarios</p>
             </Link>
             <Link to="/admin/products" className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
               <ShoppingBag className="w-8 h-8 text-green-600 mb-2" />
-              <h3 className="font-semibold">Manage Store</h3>
-              <p className="text-sm text-gray-600">Add, edit, and remove products</p>
+              <h3 className="font-semibold">Gestionar Tienda</h3>
+              <p className="text-sm text-gray-600">Agregar, editar y eliminar productos</p>
             </Link>
             <Link to="/admin/analytics" className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
               <TrendingUp className="w-8 h-8 text-purple-600 mb-2" />
-              <h3 className="font-semibold">View Analytics</h3>
-              <p className="text-sm text-gray-600">Insights and trends</p>
+              <h3 className="font-semibold">Ver Analíticas</h3>
+              <p className="text-sm text-gray-600">Información y tendencias</p>
             </Link>
           </div>
         </div>

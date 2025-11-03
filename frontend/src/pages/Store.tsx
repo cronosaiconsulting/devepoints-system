@@ -95,7 +95,7 @@ export const Store = () => {
           {products.map((product) => {
             const isFree = product.type === 'free';
             const sliderValue = sliderValues[product.id] || 0;
-            const maxSlider = product.max_tokens || 0;
+            const maxSlider = Math.min(product.max_tokens || 0, balance);
             const canPurchase = isFree ? sliderValue > 0 && sliderValue <= balance : balance >= product.price;
 
             return (
@@ -109,7 +109,7 @@ export const Store = () => {
                         product.type === 'promotion' ? 'bg-green-100 text-green-800' :
                         'bg-purple-100 text-purple-800'
                       }`}>
-                        {product.type === 'standard' ? 'Estándar' : product.type === 'promotion' ? 'Promoción' : 'Gratis'}
+                        {product.type === 'standard' ? 'Estándar' : product.type === 'promotion' ? 'Promoción' : 'Tokens'}
                       </span>
                     </div>
                     <ShoppingBag className="w-8 h-8 text-gray-400" />
@@ -130,7 +130,7 @@ export const Store = () => {
                           </div>
                         ) : (
                           <div className="flex items-center text-sm text-purple-600">
-                            <span>Máx: {maxSlider} tokens</span>
+                            <span>Máx: {product.max_tokens || 0} tokens ({Math.round((product.max_tokens || 0) / (product.real_price || product.price) * 100)}% del precio)</span>
                           </div>
                         )}
                       </div>

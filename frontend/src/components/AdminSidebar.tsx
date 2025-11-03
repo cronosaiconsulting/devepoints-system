@@ -5,13 +5,13 @@ export const AdminSidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/admin/users', label: 'Users', icon: Users },
-    { path: '/admin/rewards', label: 'Rewards', icon: Gift },
-    { path: '/admin/products', label: 'Store Management', icon: Package },
-    { path: '/admin/transactions', label: 'Transactions', icon: Receipt },
-    { path: '/admin/orders', label: 'Orders', icon: ShoppingCart },
-    { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+    { path: '/admin', label: 'Panel', icon: LayoutDashboard },
+    { path: '/admin/users', label: 'Usuarios', icon: Users },
+    { path: '/admin/rewards', label: 'Recompensas', icon: Gift },
+    { path: '/admin/products', label: 'Gestión de Tienda', icon: Package },
+    { path: '/admin/transactions', label: 'Transacciones', icon: Receipt },
+    { path: '/admin/orders', label: 'Pedidos', icon: ShoppingCart },
+    { path: '/admin/analytics', label: 'Analíticas', icon: BarChart3 },
   ];
 
   const isActive = (path: string) => {
@@ -57,7 +57,7 @@ export const AdminSidebar = () => {
           className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
         >
           <TrendingUp className="w-5 h-5" />
-          <span className="font-medium">Back to User View</span>
+          <span className="font-medium">Volver a Vista de Usuario</span>
         </Link>
       </div>
     </aside>

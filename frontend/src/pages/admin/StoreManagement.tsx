@@ -52,35 +52,35 @@ export const StoreManagement = () => {
       }
 
       await adminAPI.createProduct(payload.name, payload.description, payload.price, payload.type);
-      alert('Product created successfully!');
+      alert('¡Producto creado exitosamente!');
       setShowCreateModal(false);
       setProductForm({ name: '', description: '', price: '', realPrice: '', maxTokens: '', type: 'standard' });
       loadProducts();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Creation failed');
+      alert(error.response?.data?.error || 'Creación fallida');
     }
   };
 
   const handleUpdate = async (productId: number, updates: any) => {
     try {
       await adminAPI.updateProduct(productId, updates);
-      alert('Product updated successfully!');
+      alert('¡Producto actualizado exitosamente!');
       setEditingProduct(null);
       loadProducts();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Update failed');
+      alert(error.response?.data?.error || 'Actualización fallida');
     }
   };
 
   const handleDelete = async (productId: number, productName: string) => {
-    if (!confirm(`Are you sure you want to delete "${productName}"?`)) return;
+    if (!confirm(`¿Estás seguro de que quieres eliminar "${productName}"?`)) return;
 
     try {
       await adminAPI.deleteProduct(productId);
-      alert('Product deleted successfully!');
+      alert('¡Producto eliminado exitosamente!');
       loadProducts();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Delete failed');
+      alert(error.response?.data?.error || 'Eliminación fallida');
     }
   };
 
@@ -93,7 +93,7 @@ export const StoreManagement = () => {
       <div className="flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl">Loading...</div>
+          <div className="text-xl">Cargando...</div>
         </div>
       </div>
     );
@@ -108,16 +108,16 @@ export const StoreManagement = () => {
           <div>
             <h1 className="text-3xl font-bold mb-2 flex items-center">
               <Package className="w-8 h-8 mr-3 text-blue-600" />
-              Store Management
+              Gestión de Tienda
             </h1>
-            <p className="text-gray-600">Manage products in the store</p>
+            <p className="text-gray-600">Gestionar productos en la tienda</p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center font-semibold"
           >
             <Plus className="w-5 h-5 mr-2" />
-            Add Product
+            Agregar Producto
           </button>
         </div>
 
@@ -171,12 +171,12 @@ export const StoreManagement = () => {
                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                   >
-                    {product.active ? 'Active' : 'Inactive'}
+                    {product.active ? 'Activo' : 'Inactivo'}
                   </button>
                 </div>
 
                 <div className="mt-3 text-xs text-gray-500">
-                  Created: {format(new Date(product.created_at), 'MMM dd, yyyy')}
+                  Creado: {format(new Date(product.created_at), 'MMM dd, yyyy')}
                 </div>
               </div>
             </div>
@@ -186,8 +186,8 @@ export const StoreManagement = () => {
         {products.length === 0 && (
           <div className="text-center py-12 bg-white rounded-lg shadow">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 text-lg">No products yet</p>
-            <p className="text-gray-500">Click "Add Product" to create your first product</p>
+            <p className="text-gray-600 text-lg">Aún no hay productos</p>
+            <p className="text-gray-500">Click "Agregar Producto" para crear tu primer producto</p>
           </div>
         )}
 
@@ -195,11 +195,11 @@ export const StoreManagement = () => {
         {showCreateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-xl font-bold mb-4">Create New Product</h3>
+              <h3 className="text-xl font-bold mb-4">Crear Nuevo Producto</h3>
 
               <form onSubmit={handleCreate} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                   <input
                     type="text"
                     required
@@ -210,7 +210,7 @@ export const StoreManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                   <textarea
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -221,16 +221,16 @@ export const StoreManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
                   <select
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     value={productForm.type}
                     onChange={(e) => setProductForm({ ...productForm, type: e.target.value })}
                   >
-                    <option value="standard">Standard</option>
-                    <option value="promotion">Promotion</option>
-                    <option value="free">Free</option>
+                    <option value="standard">Estándar</option>
+                    <option value="promotion">Promoción</option>
+                    <option value="free">Gratis</option>
                   </select>
                 </div>
 
@@ -248,7 +248,7 @@ export const StoreManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Token Price</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Precio en Tokens</label>
                   <input
                     type="number"
                     required
@@ -261,7 +261,7 @@ export const StoreManagement = () => {
 
                 {productForm.type === 'free' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Tokens (50% of price)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Máx Tokens (50% of price)</label>
                     <input
                       type="number"
                       min="1"
@@ -278,14 +278,14 @@ export const StoreManagement = () => {
                     type="submit"
                     className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
                   >
-                    Create Product
+                    Crear Producto
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
                     className="flex-1 py-2 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400"
                   >
-                    Cancel
+                    Cancelar
                   </button>
                 </div>
               </form>
@@ -297,7 +297,7 @@ export const StoreManagement = () => {
         {editingProduct && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-xl font-bold mb-4">Edit Product</h3>
+              <h3 className="text-xl font-bold mb-4">Editar Producto</h3>
 
               <form onSubmit={(e) => {
                 e.preventDefault();
@@ -319,7 +319,7 @@ export const StoreManagement = () => {
                 handleUpdate(editingProduct.id, updates);
               }} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                   <input
                     type="text"
                     required
@@ -330,7 +330,7 @@ export const StoreManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                   <textarea
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -341,16 +341,16 @@ export const StoreManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
                   <select
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     value={editingProduct.type}
                     onChange={(e) => setEditingProduct({ ...editingProduct, type: e.target.value })}
                   >
-                    <option value="standard">Standard</option>
-                    <option value="promotion">Promotion</option>
-                    <option value="free">Free</option>
+                    <option value="standard">Estándar</option>
+                    <option value="promotion">Promoción</option>
+                    <option value="free">Gratis</option>
                   </select>
                 </div>
 
@@ -368,7 +368,7 @@ export const StoreManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Token Price</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Precio en Tokens</label>
                   <input
                     type="number"
                     required
@@ -381,7 +381,7 @@ export const StoreManagement = () => {
 
                 {editingProduct.type === 'free' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Tokens (50% of price)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Máx Tokens (50% of price)</label>
                     <input
                       type="number"
                       min="1"
@@ -398,14 +398,14 @@ export const StoreManagement = () => {
                     type="submit"
                     className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
                   >
-                    Save Changes
+                    Guardar Cambios
                   </button>
                   <button
                     type="button"
                     onClick={() => setEditingProduct(null)}
                     className="flex-1 py-2 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400"
                   >
-                    Cancel
+                    Cancelar
                   </button>
                 </div>
               </form>
