@@ -152,20 +152,32 @@ export const Store = () => {
                   {isFree && (
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Tokens a gastar: {sliderValue}
+                        Tokens a gastar: {sliderValue} / {maxSlider}
                       </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max={maxSlider}
-                        value={sliderValue}
-                        onChange={(e) => setSliderValues({...sliderValues, [product.id]: parseInt(e.target.value)})}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                      />
-                      <div className="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>0</span>
-                        <span>{maxSlider}</span>
-                      </div>
+                      {maxSlider > 0 ? (
+                        <>
+                          <input
+                            type="range"
+                            min="0"
+                            max={maxSlider}
+                            value={sliderValue}
+                            onChange={(e) => setSliderValues({...sliderValues, [product.id]: parseInt(e.target.value)})}
+                            className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
+                            style={{
+                              background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(sliderValue / maxSlider) * 100}%, #e5e7eb ${(sliderValue / maxSlider) * 100}%, #e5e7eb 100%)`
+                            }}
+                          />
+                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0</span>
+                            <span>{maxSlider}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-sm text-red-600">
+                          No hay suficientes tokens o producto sin max_tokens configurado.
+                          (Balance: {balance}, Max tokens producto: {productMaxTokens})
+                        </div>
+                      )}
                     </div>
                   )}
 
