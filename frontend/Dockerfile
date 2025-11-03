@@ -15,7 +15,8 @@ COPY tailwind.config.js postcss.config.js ./
 RUN echo "Checking src files:" && ls -la src/ && ls -la src/pages/
 
 # Build the application
-RUN npm run build
+# Clear any old dist and rebuild fresh
+RUN rm -rf dist && npm run build
 
 # Show what was built
 RUN echo "Build output:" && find dist -type f -ls
