@@ -16,7 +16,8 @@ export const StoreManagement = () => {
     realPrice: '',
     maxTokens: '',
     type: 'standard',
-    tokenOffers: [] as Array<{tokens: number, money: number, summary: string}>
+    tokenOffers: [] as Array<{tokens: number, money: number, summary: string}>,
+    imageUrl: ''
   });
   const [newTokenOffer, setNewTokenOffer] = useState({ tokens: '', money: '' });
   const [editTokenOffer, setEditTokenOffer] = useState({ tokens: '', money: '' });
@@ -58,6 +59,10 @@ export const StoreManagement = () => {
         payload.token_offers = productForm.tokenOffers;
       }
 
+      if (productForm.imageUrl) {
+        payload.image_url = productForm.imageUrl;
+      }
+
       await adminAPI.createProduct(
         payload.name,
         payload.description,
@@ -65,11 +70,12 @@ export const StoreManagement = () => {
         payload.type,
         payload.real_price,
         payload.max_tokens,
-        payload.token_offers
+        payload.token_offers,
+        payload.image_url
       );
       alert('¡Producto creado exitosamente!');
       setShowCreateModal(false);
-      setProductForm({ name: '', description: '', price: '', realPrice: '', maxTokens: '', type: 'standard', tokenOffers: [] });
+      setProductForm({ name: '', description: '', price: '', realPrice: '', maxTokens: '', type: 'standard', tokenOffers: [], imageUrl: '' });
       loadProducts();
     } catch (error: any) {
       alert(error.response?.data?.error || 'Creación fallida');

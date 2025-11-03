@@ -73,14 +73,14 @@ export const adminService = {
     return result.rows;
   },
 
-  async createProduct(name: string, description: string, price: number, type: string, real_price?: number, max_tokens?: number, token_offers?: any[]) {
-    // Try with token_offers first, fallback if column doesn't exist
+  async createProduct(name: string, description: string, price: number, type: string, real_price?: number, max_tokens?: number, token_offers?: any[], image_url?: string) {
+    // Try with all optional columns first, fallback if columns don't exist
     try {
       const result = await pool.query(
-        `INSERT INTO products (name, description, price, real_price, max_tokens, type, token_offers)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `INSERT INTO products (name, description, price, real_price, max_tokens, type, token_offers, image_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *`,
-        [name, description, price, real_price || price, max_tokens, type, JSON.stringify(token_offers || [])]
+        [name, description, price, real_price || price, max_tokens, type, JSON.stringify(token_offers || []), image_url || '']
       );
       return result.rows[0];
     } catch (error: any) {
@@ -134,6 +134,10 @@ export const adminService = {
     if (updates.token_offers !== undefined) {
       fields.push(`token_offers = $${paramCount++}`);
       values.push(JSON.stringify(updates.token_offers));
+    }
+    if (updates.image_url !== undefined) {
+      fields.push(`image_url = $${paramCount++}`);
+      values.push(updates.image_url);
     }
 
     values.push(productId);

@@ -14,7 +14,8 @@ export const settingsService = {
       if (error.code === '42P01') {
         return [
           { key: 'referral_tokens', value: '50', description: 'Tokens otorgados por referido registrado', updated_at: new Date() },
-          { key: 'expiring_soon_days', value: '30', description: 'Días para considerar que los tokens expiran pronto', updated_at: new Date() }
+          { key: 'expiring_soon_days', value: '30', description: 'Días para considerar que los tokens expiran pronto', updated_at: new Date() },
+          { key: 'logo_url', value: '', description: 'URL del logo principal (usar IMGUR)', updated_at: new Date() }
         ];
       }
       throw error;
@@ -36,7 +37,8 @@ export const settingsService = {
       if (error.code === '42P01') {
         const defaults: Record<string, string> = {
           'referral_tokens': '50',
-          'expiring_soon_days': '30'
+          'expiring_soon_days': '30',
+          'logo_url': ''
         };
         return defaults[key] || null;
       }

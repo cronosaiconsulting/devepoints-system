@@ -80,13 +80,14 @@ const productSchema = z.object({
   real_price: z.number().positive().optional(),
   max_tokens: z.number().positive().optional(),
   type: z.enum(['standard', 'promotion', 'free']),
-  token_offers: z.array(tokenOfferSchema).optional()
+  token_offers: z.array(tokenOfferSchema).optional(),
+  image_url: z.string().optional()
 });
 
 router.post('/products', async (req, res) => {
   try {
-    const { name, description, price, real_price, max_tokens, type, token_offers } = productSchema.parse(req.body);
-    const product = await adminService.createProduct(name, description, price, type, real_price, max_tokens, token_offers);
+    const { name, description, price, real_price, max_tokens, type, token_offers, image_url } = productSchema.parse(req.body);
+    const product = await adminService.createProduct(name, description, price, type, real_price, max_tokens, token_offers, image_url);
     res.json({ success: true, product });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
