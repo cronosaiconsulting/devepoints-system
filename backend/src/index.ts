@@ -81,11 +81,15 @@ app.post('/reset-admin-temp', async (req, res) => {
       { name: 'Free Consultation', description: '30-minute free consultation', price: 80, real_price: 80, max_tokens: null, type: 'standard' },
     ];
 
+    // Delete existing products with the same names to avoid duplicates
+    const productNames = products.map(p => p.name);
+    await pool.query(`DELETE FROM products WHERE name = ANY($1)`, [productNames]);
+
+    // Insert fresh products
     for (const product of products) {
       await pool.query(`
         INSERT INTO products (name, description, price, real_price, max_tokens, type)
         VALUES ($1, $2, $3, $4, $5, $6)
-        ON CONFLICT DO NOTHING
       `, [product.name, product.description, product.price, product.real_price, product.max_tokens, product.type]);
     }
 
@@ -96,11 +100,15 @@ app.post('/reset-admin-temp', async (req, res) => {
       { amount: 200, event_title: 'Reto 7 días', default_expiry_days: 365 }
     ];
 
+    // Delete existing rewards with the same titles to avoid duplicates
+    const rewardTitles = rewards.map(r => r.event_title);
+    await pool.query(`DELETE FROM rewards WHERE event_title = ANY($1)`, [rewardTitles]);
+
+    // Insert fresh rewards
     for (const reward of rewards) {
       await pool.query(`
         INSERT INTO rewards (amount, event_title, default_expiry_days)
         VALUES ($1, $2, $3)
-        ON CONFLICT DO NOTHING
       `, [reward.amount, reward.event_title, reward.default_expiry_days]);
     }
 
