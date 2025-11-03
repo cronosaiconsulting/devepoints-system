@@ -40,7 +40,7 @@ export const AdminDashboard = () => {
       <div className="flex-1 p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Welcome to the Devecoin administration panel</p>
+          <p className="text-gray-600">Welcome to the Tokens Develand administration panel</p>
         </div>
 
         {/* Stats Grid */}

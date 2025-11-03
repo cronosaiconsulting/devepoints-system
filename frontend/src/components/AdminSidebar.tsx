@@ -25,7 +25,7 @@ export const AdminSidebar = () => {
     <aside className="w-64 bg-gray-900 text-white min-h-screen p-4">
       <div className="mb-8">
         <h2 className="text-xl font-bold text-blue-400 mb-1">Admin Panel</h2>
-        <p className="text-gray-400 text-sm">Devecoin System</p>
+        <p className="text-gray-400 text-sm">Tokens Develand System</p>
       </div>
 
       <nav className="space-y-2">

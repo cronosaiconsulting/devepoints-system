@@ -67,7 +67,7 @@ export const Store = () => {
           <h1 className="text-3xl font-bold">Store</h1>
           <div className="flex items-center bg-blue-100 px-4 py-2 rounded-lg">
             <Coins className="w-5 h-5 text-blue-600 mr-2" />
-            <span className="font-semibold text-blue-800">{balance} Devecoins</span>
+            <span className="font-semibold text-blue-800">{balance} Tokens Develand</span>
           </div>
         </div>
 

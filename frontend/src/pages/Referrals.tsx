@@ -51,7 +51,7 @@ export const Referrals = () => {
               <div>
                 <p className="text-green-100 text-sm">Total Earned</p>
                 <p className="text-4xl font-bold mt-2">{stats.total_earned}</p>
-                <p className="text-green-100 text-sm mt-1">Devecoins</p>
+                <p className="text-green-100 text-sm mt-1">Tokens Develand</p>
               </div>
               <Coins className="w-16 h-16 text-green-200" />
             </div>
@@ -96,13 +96,13 @@ export const Referrals = () => {
                 <div className="bg-white text-blue-600 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0">
                   2
                 </div>
-                <p>They sign up using your link and get bonus Devecoins</p>
+                <p>They sign up using your link and get bonus Tokens Develand</p>
               </div>
               <div className="flex items-start">
                 <div className="bg-white text-blue-600 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0">
                   3
                 </div>
-                <p>You earn reward Devecoins for each successful referral!</p>
+                <p>You earn reward Tokens Develand for each successful referral!</p>
               </div>
             </div>
           </div>

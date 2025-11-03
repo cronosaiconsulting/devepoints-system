@@ -115,7 +115,7 @@ export const Admin = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center mb-6">
               <Award className="w-6 h-6 text-blue-600 mr-2" />
-              <h2 className="text-2xl font-bold">Award Devecoins</h2>
+              <h2 className="text-2xl font-bold">Award Tokens Develand</h2>
             </div>
 
             <div className="mb-4">

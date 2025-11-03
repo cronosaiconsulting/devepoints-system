@@ -56,7 +56,7 @@ export const Dashboard = () => {
               <div>
                 <p className="text-blue-100 text-sm">Current Balance</p>
                 <p className="text-4xl font-bold mt-2">{balance}</p>
-                <p className="text-blue-100 text-sm mt-1">Devecoins</p>
+                <p className="text-blue-100 text-sm mt-1">Tokens Develand</p>
               </div>
               <Coins className="w-16 h-16 text-blue-200" />
             </div>
@@ -95,7 +95,7 @@ export const Dashboard = () => {
                 <div className="mt-2 space-y-1">
                   {expiring.map((item, idx) => (
                     <p key={idx} className="text-yellow-700">
-                      <strong>{item.expiring_amount}</strong> Devecoins expire on{' '}
+                      <strong>{item.expiring_amount}</strong> Tokens Develand expire on{' '}
                       {format(new Date(item.expires_at), 'MMM dd, yyyy')}
                     </p>
                   ))}
