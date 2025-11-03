@@ -110,7 +110,7 @@ export const Dashboard = () => {
               <div>
                 <p className="text-gray-600 text-sm">
                   Expiran Pronto
-                  {expiring.length > 0 && (
+                  {expiring.length > 0 && expiring[0].expires_at && (
                     <span className="text-xs ml-1">
                       ({format(new Date(expiring[0].expires_at), 'dd/MM/yyyy')})
                     </span>

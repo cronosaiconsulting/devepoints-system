@@ -74,14 +74,28 @@ export const adminService = {
   },
 
   async createProduct(name: string, description: string, price: number, type: string, real_price?: number, max_tokens?: number, token_offers?: any[]) {
-    const result = await pool.query(
-      `INSERT INTO products (name, description, price, real_price, max_tokens, type, token_offers)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING *`,
-      [name, description, price, real_price || price, max_tokens, type, JSON.stringify(token_offers || [])]
-    );
-
-    return result.rows[0];
+    // Try with token_offers first, fallback if column doesn't exist
+    try {
+      const result = await pool.query(
+        `INSERT INTO products (name, description, price, real_price, max_tokens, type, token_offers)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING *`,
+        [name, description, price, real_price || price, max_tokens, type, JSON.stringify(token_offers || [])]
+      );
+      return result.rows[0];
+    } catch (error: any) {
+      // If column doesn't exist, create without it
+      if (error.code === '42703') {
+        const result = await pool.query(
+          `INSERT INTO products (name, description, price, real_price, max_tokens, type)
+           VALUES ($1, $2, $3, $4, $5, $6)
+           RETURNING *`,
+          [name, description, price, real_price || price, max_tokens, type]
+        );
+        return result.rows[0];
+      }
+      throw error;
+    }
   },
 
   async updateProduct(productId: number, updates: any) {

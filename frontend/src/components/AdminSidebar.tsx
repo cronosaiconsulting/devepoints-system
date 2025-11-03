@@ -8,7 +8,7 @@ export const AdminSidebar = () => {
     { path: '/admin', label: 'Panel', icon: LayoutDashboard },
     { path: '/admin/users', label: 'Usuarios', icon: Users },
     { path: '/admin/rewards', label: 'Recompensas', icon: Gift },
-    { path: '/admin/products', label: 'Gestión de Tienda', icon: Package },
+    { path: '/admin/products', label: 'Gestión de Catálogo', icon: Package },
     { path: '/admin/transactions', label: 'Transacciones', icon: Receipt },
     { path: '/admin/orders', label: 'Pedidos', icon: ShoppingCart },
     { path: '/admin/analytics', label: 'Analíticas', icon: BarChart3 },

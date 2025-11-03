@@ -18,6 +18,8 @@ export const StoreManagement = () => {
     type: 'standard',
     tokenOffers: [] as Array<{tokens: number, money: number, summary: string}>
   });
+  const [newTokenOffer, setNewTokenOffer] = useState({ tokens: '', money: '' });
+  const [editTokenOffer, setEditTokenOffer] = useState({ tokens: '', money: '' });
 
   useEffect(() => {
     loadProducts();
@@ -56,7 +58,15 @@ export const StoreManagement = () => {
         payload.token_offers = productForm.tokenOffers;
       }
 
-      await adminAPI.createProduct(payload.name, payload.description, payload.price, payload.type);
+      await adminAPI.createProduct(
+        payload.name,
+        payload.description,
+        payload.price,
+        payload.type,
+        payload.real_price,
+        payload.max_tokens,
+        payload.token_offers
+      );
       alert('¡Producto creado exitosamente!');
       setShowCreateModal(false);
       setProductForm({ name: '', description: '', price: '', realPrice: '', maxTokens: '', type: 'standard', tokenOffers: [] });
@@ -113,7 +123,7 @@ export const StoreManagement = () => {
           <div>
             <h1 className="text-3xl font-bold mb-2 flex items-center">
               <Package className="w-8 h-8 mr-3 text-blue-600" />
-              Gestión de Tienda
+              Gestión de Catálogo
             </h1>
             <p className="text-gray-600">Gestionar productos en la tienda</p>
           </div>
@@ -144,7 +154,10 @@ export const StoreManagement = () => {
                   </div>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => setEditingProduct(product)}
+                      onClick={() => setEditingProduct({
+                        ...product,
+                        token_offers: product.token_offers || []
+                      })}
                       className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
                     >
                       <Edit2 className="w-4 h-4" />
@@ -199,7 +212,7 @@ export const StoreManagement = () => {
         {/* Create Modal */}
         {showCreateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <h3 className="text-xl font-bold mb-4">Crear Nuevo Producto</h3>
 
               <form onSubmit={handleCreate} className="space-y-4">
@@ -267,41 +280,75 @@ export const StoreManagement = () => {
                 {productForm.type === 'standard' && (
                   <div className="border-t pt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Ofertas Múltiples de Tokens</label>
-                    <div className="space-y-2">
-                      {productForm.tokenOffers.map((offer, idx) => (
-                        <div key={idx} className="flex space-x-2 items-center bg-gray-50 p-2 rounded">
-                          <span className="text-sm flex-1">{offer.summary}</span>
+
+                    {/* Existing offers */}
+                    {productForm.tokenOffers.length > 0 && (
+                      <div className="mb-3 space-y-2">
+                        {productForm.tokenOffers.map((offer, idx) => (
+                          <div key={idx} className="flex space-x-2 items-center bg-gray-50 p-2 rounded">
+                            <span className="text-sm flex-1">{offer.summary}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newOffers = productForm.tokenOffers.filter((_, i) => i !== idx);
+                                setProductForm({ ...productForm, tokenOffers: newOffers });
+                              }}
+                              className="text-red-600 hover:text-red-800 text-sm px-2"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Add new offer - inline 3 column table */}
+                    <div className="border border-gray-300 rounded-lg p-3 bg-blue-50">
+                      <div className="grid grid-cols-3 gap-2 mb-2">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Tokens</label>
+                          <input
+                            type="number"
+                            min="0"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                            value={newTokenOffer.tokens}
+                            onChange={(e) => setNewTokenOffer({ ...newTokenOffer, tokens: e.target.value })}
+                            placeholder="100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Dinero (€)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                            value={newTokenOffer.money}
+                            onChange={(e) => setNewTokenOffer({ ...newTokenOffer, money: e.target.value })}
+                            placeholder="50.00"
+                          />
+                        </div>
+                        <div className="flex items-end">
                           <button
                             type="button"
                             onClick={() => {
-                              const newOffers = productForm.tokenOffers.filter((_, i) => i !== idx);
-                              setProductForm({ ...productForm, tokenOffers: newOffers });
+                              if (newTokenOffer.tokens && newTokenOffer.money) {
+                                const tokensNum = parseInt(newTokenOffer.tokens);
+                                const moneyNum = parseFloat(newTokenOffer.money);
+                                const summary = `${tokensNum} Tokens + ${moneyNum.toFixed(2)}€`;
+                                setProductForm({
+                                  ...productForm,
+                                  tokenOffers: [...productForm.tokenOffers, { tokens: tokensNum, money: moneyNum, summary }]
+                                });
+                                setNewTokenOffer({ tokens: '', money: '' });
+                              }
                             }}
-                            className="text-red-600 hover:text-red-800 text-sm"
+                            className="w-full py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
                           >
-                            Eliminar
+                            + Añadir
                           </button>
                         </div>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const tokens = prompt('Cantidad de Tokens:');
-                          const money = prompt('Cantidad de Dinero (€):');
-                          if (tokens && money) {
-                            const tokensNum = parseInt(tokens);
-                            const moneyNum = parseFloat(money);
-                            const summary = `${tokensNum} Tokens + ${moneyNum.toFixed(2)}€`;
-                            setProductForm({
-                              ...productForm,
-                              tokenOffers: [...productForm.tokenOffers, { tokens: tokensNum, money: moneyNum, summary }]
-                            });
-                          }
-                        }}
-                        className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600"
-                      >
-                        + Añadir opción...
-                      </button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -343,7 +390,7 @@ export const StoreManagement = () => {
         {/* Edit Modal */}
         {editingProduct && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <h3 className="text-xl font-bold mb-4">Editar Producto</h3>
 
               <form onSubmit={(e) => {
@@ -361,6 +408,10 @@ export const StoreManagement = () => {
 
                 if (editingProduct.type === 'free' && editingProduct.max_tokens) {
                   updates.max_tokens = parseInt(editingProduct.max_tokens);
+                }
+
+                if (editingProduct.type === 'standard' && editingProduct.token_offers) {
+                  updates.token_offers = editingProduct.token_offers;
                 }
 
                 handleUpdate(editingProduct.id, updates);
@@ -425,6 +476,83 @@ export const StoreManagement = () => {
                     onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
                   />
                 </div>
+
+                {editingProduct.type === 'standard' && (
+                  <div className="border-t pt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Ofertas Múltiples de Tokens</label>
+
+                    {/* Existing offers */}
+                    {editingProduct.token_offers && editingProduct.token_offers.length > 0 && (
+                      <div className="mb-3 space-y-2">
+                        {editingProduct.token_offers.map((offer: any, idx: number) => (
+                          <div key={idx} className="flex space-x-2 items-center bg-gray-50 p-2 rounded">
+                            <span className="text-sm flex-1">{offer.summary}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newOffers = editingProduct.token_offers.filter((_: any, i: number) => i !== idx);
+                                setEditingProduct({ ...editingProduct, token_offers: newOffers });
+                              }}
+                              className="text-red-600 hover:text-red-800 text-sm px-2"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Add new offer - inline 3 column table */}
+                    <div className="border border-gray-300 rounded-lg p-3 bg-blue-50">
+                      <div className="grid grid-cols-3 gap-2 mb-2">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Tokens</label>
+                          <input
+                            type="number"
+                            min="0"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                            value={editTokenOffer.tokens}
+                            onChange={(e) => setEditTokenOffer({ ...editTokenOffer, tokens: e.target.value })}
+                            placeholder="100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Dinero (€)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                            value={editTokenOffer.money}
+                            onChange={(e) => setEditTokenOffer({ ...editTokenOffer, money: e.target.value })}
+                            placeholder="50.00"
+                          />
+                        </div>
+                        <div className="flex items-end">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (editTokenOffer.tokens && editTokenOffer.money) {
+                                const tokensNum = parseInt(editTokenOffer.tokens);
+                                const moneyNum = parseFloat(editTokenOffer.money);
+                                const summary = `${tokensNum} Tokens + ${moneyNum.toFixed(2)}€`;
+                                const currentOffers = editingProduct.token_offers || [];
+                                setEditingProduct({
+                                  ...editingProduct,
+                                  token_offers: [...currentOffers, { tokens: tokensNum, money: moneyNum, summary }]
+                                });
+                                setEditTokenOffer({ tokens: '', money: '' });
+                              }
+                            }}
+                            className="w-full py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                          >
+                            + Añadir
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {editingProduct.type === 'free' && (
                   <div>

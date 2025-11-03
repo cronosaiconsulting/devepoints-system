@@ -1,20 +1,31 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authAPI } from '../api/client';
 import { useAuth } from '../hooks/useAuth';
 
 export const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get('ref');
+
+  const [isLogin, setIsLogin] = useState(!refCode); // If ref code exists, show register form
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     fullName: '',
-    referralCode: ''
+    referralCode: refCode || ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Update referral code if URL changes
+  useEffect(() => {
+    if (refCode) {
+      setFormData(prev => ({ ...prev, referralCode: refCode }));
+      setIsLogin(false); // Switch to registration mode
+    }
+  }, [refCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +64,14 @@ export const Login = () => {
         </div>
 
         <h2 className="text-2xl font-semibold text-center mb-6">
-          {isLogin ? 'Bienvenido a la tienda de tokens de Develand' : 'Crear Cuenta'}
+          {isLogin ? 'Bienvenido al Sistema de Tokens Develand' : 'Crear Cuenta'}
         </h2>
+
+        {refCode && !isLogin && (
+          <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4">
+            🎁 ¡Has sido invitado! Código de referido: <strong>{refCode}</strong>
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

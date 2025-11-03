@@ -8,7 +8,7 @@ export const Referrals = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState({ total_referrals: 0, total_earned: 0 });
   const [copied, setCopied] = useState(false);
-  const referralUrl = `${window.location.origin}/register?ref=${user?.referralCode}`;
+  const referralUrl = `${window.location.origin}/login?ref=${user?.referralCode}`;
 
   useEffect(() => {
     loadStats();

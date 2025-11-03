@@ -78,7 +78,7 @@ export const Store = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Tienda</h1>
+          <h1 className="text-3xl font-bold">Catálogo</h1>
           <div className="flex items-center bg-blue-100 px-4 py-2 rounded-lg">
             <Coins className="w-5 h-5 text-blue-600 mr-2" />
             <span className="font-semibold text-blue-800">{balance} Tokens Develand</span>
@@ -189,7 +189,7 @@ export const Store = () => {
                         : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                   >
-                    {purchasing === product.id ? 'Procesando...' : 'Comprar'}
+                    {purchasing === product.id ? 'Procesando...' : 'Canjear'}
                   </button>
                 </div>
               </div>

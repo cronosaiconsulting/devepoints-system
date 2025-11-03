@@ -34,7 +34,7 @@ async function migrateSettings() {
       {
         key: 'expiring_soon_days',
         value: '30',
-        description: 'Días para considerar que los tokens expiran pronto'
+        description: 'Días para considerar que los tokens expiran pronto (para notificaciones)'
       },
       {
         key: 'referral_bonus_new_user',

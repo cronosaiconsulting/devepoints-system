@@ -60,8 +60,8 @@ export const adminAPI = {
   getUserDetails: (userId: number) =>
     api.get(`/admin/users/${userId}`),
 
-  createProduct: (name: string, description: string, price: number, type: string) =>
-    api.post('/admin/products', { name, description, price, type }),
+  createProduct: (name: string, description: string, price: number, type: string, real_price?: number, max_tokens?: number, token_offers?: any[]) =>
+    api.post('/admin/products', { name, description, price, type, real_price, max_tokens, token_offers }),
 
   updateProduct: (id: number, updates: any) =>
     api.patch(`/admin/products/${id}`, updates),

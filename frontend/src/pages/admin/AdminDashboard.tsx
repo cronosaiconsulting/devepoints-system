@@ -98,7 +98,7 @@ export const AdminDashboard = () => {
             </Link>
             <Link to="/admin/products" className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
               <ShoppingBag className="w-8 h-8 text-green-600 mb-2" />
-              <h3 className="font-semibold">Gestionar Tienda</h3>
+              <h3 className="font-semibold">Gestionar Catálogo</h3>
               <p className="text-sm text-gray-600">Agregar, editar y eliminar productos</p>
             </Link>
             <Link to="/admin/analytics" className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">

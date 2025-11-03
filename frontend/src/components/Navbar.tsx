@@ -25,7 +25,7 @@ export const Navbar = () => {
             </Link>
             <Link to="/store" className="flex items-center space-x-1 hover:text-blue-200 whitespace-nowrap">
               <ShoppingBag className="w-5 h-5" />
-              <span>Tienda</span>
+              <span>Catálogo</span>
             </Link>
             <Link to="/referrals" className="flex items-center space-x-1 hover:text-blue-200 whitespace-nowrap">
               <Gift className="w-5 h-5" />
@@ -76,7 +76,7 @@ export const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <ShoppingBag className="w-5 h-5" />
-                <span>Tienda</span>
+                <span>Catálogo</span>
               </Link>
               <Link
                 to="/referrals"
