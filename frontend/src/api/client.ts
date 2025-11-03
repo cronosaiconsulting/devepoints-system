@@ -90,5 +90,9 @@ export const adminAPI = {
     api.patch(`/admin/rewards/${id}`, updates),
 
   deleteReward: (id: number) =>
-    api.delete(`/admin/rewards/${id}`)
+    api.delete(`/admin/rewards/${id}`),
+
+  // Transactions
+  refundTransaction: (transactionId: number, reason?: string) =>
+    api.post(`/admin/transactions/${transactionId}/refund`, { reason })
 };

@@ -13,7 +13,9 @@ export const StoreManagement = () => {
     name: '',
     description: '',
     price: '',
-    type: 'service'
+    realPrice: '',
+    maxTokens: '',
+    type: 'standard'
   });
 
   useEffect(() => {
@@ -34,15 +36,25 @@ export const StoreManagement = () => {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await adminAPI.createProduct(
-        productForm.name,
-        productForm.description,
-        parseInt(productForm.price),
-        productForm.type
-      );
+      const payload: any = {
+        name: productForm.name,
+        description: productForm.description,
+        price: parseInt(productForm.price),
+        type: productForm.type
+      };
+
+      if (productForm.realPrice) {
+        payload.real_price = parseFloat(productForm.realPrice);
+      }
+
+      if (productForm.type === 'free' && productForm.maxTokens) {
+        payload.max_tokens = parseInt(productForm.maxTokens);
+      }
+
+      await adminAPI.createProduct(payload.name, payload.description, payload.price, payload.type);
       alert('Product created successfully!');
       setShowCreateModal(false);
-      setProductForm({ name: '', description: '', price: '', type: 'service' });
+      setProductForm({ name: '', description: '', price: '', realPrice: '', maxTokens: '', type: 'standard' });
       loadProducts();
     } catch (error: any) {
       alert(error.response?.data?.error || 'Creation failed');
@@ -118,8 +130,8 @@ export const StoreManagement = () => {
                   <div className="flex-1">
                     <h3 className="text-xl font-bold mb-2">{product.name}</h3>
                     <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${
-                      product.type === 'discount' ? 'bg-green-100 text-green-800' :
-                      product.type === 'service' ? 'bg-blue-100 text-blue-800' :
+                      product.type === 'standard' ? 'bg-blue-100 text-blue-800' :
+                      product.type === 'promotion' ? 'bg-green-100 text-green-800' :
                       'bg-purple-100 text-purple-800'
                     }`}>
                       {product.type}
@@ -144,7 +156,13 @@ export const StoreManagement = () => {
                 <p className="text-gray-600 mb-4 text-sm">{product.description}</p>
 
                 <div className="flex items-center justify-between pt-4 border-t">
-                  <div className="text-2xl font-bold text-blue-600">Ð {product.price}</div>
+                  <div>
+                    <div className="text-2xl font-bold text-blue-600">€{product.real_price || product.price}</div>
+                    <div className="text-sm text-gray-600">{product.price} tokens</div>
+                    {product.type === 'free' && product.max_tokens && (
+                      <div className="text-xs text-purple-600 mt-1">Max: {product.max_tokens} tokens</div>
+                    )}
+                  </div>
                   <button
                     onClick={() => toggleActive(product)}
                     className={`px-4 py-2 rounded-lg font-semibold text-sm ${
@@ -203,7 +221,34 @@ export const StoreManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (Ð)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    value={productForm.type}
+                    onChange={(e) => setProductForm({ ...productForm, type: e.target.value })}
+                  >
+                    <option value="standard">Standard</option>
+                    <option value="promotion">Promotion</option>
+                    <option value="free">Free</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (€)</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    step="0.01"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    value={productForm.realPrice}
+                    onChange={(e) => setProductForm({ ...productForm, realPrice: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Token Price</label>
                   <input
                     type="number"
                     required
@@ -214,19 +259,19 @@ export const StoreManagement = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                  <select
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    value={productForm.type}
-                    onChange={(e) => setProductForm({ ...productForm, type: e.target.value })}
-                  >
-                    <option value="discount">Discount</option>
-                    <option value="service">Service</option>
-                    <option value="physical">Physical Product</option>
-                  </select>
-                </div>
+                {productForm.type === 'free' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Tokens (50% of price)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      value={productForm.maxTokens}
+                      onChange={(e) => setProductForm({ ...productForm, maxTokens: e.target.value })}
+                      placeholder={productForm.realPrice ? String(Math.floor(parseFloat(productForm.realPrice) * 0.5)) : ''}
+                    />
+                  </div>
+                )}
 
                 <div className="flex space-x-3">
                   <button
@@ -256,12 +301,22 @@ export const StoreManagement = () => {
 
               <form onSubmit={(e) => {
                 e.preventDefault();
-                handleUpdate(editingProduct.id, {
+                const updates: any = {
                   name: editingProduct.name,
                   description: editingProduct.description,
                   price: parseInt(editingProduct.price),
                   type: editingProduct.type
-                });
+                };
+
+                if (editingProduct.real_price) {
+                  updates.real_price = parseFloat(editingProduct.real_price);
+                }
+
+                if (editingProduct.type === 'free' && editingProduct.max_tokens) {
+                  updates.max_tokens = parseInt(editingProduct.max_tokens);
+                }
+
+                handleUpdate(editingProduct.id, updates);
               }} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
@@ -286,7 +341,34 @@ export const StoreManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (Ð)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    value={editingProduct.type}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, type: e.target.value })}
+                  >
+                    <option value="standard">Standard</option>
+                    <option value="promotion">Promotion</option>
+                    <option value="free">Free</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (€)</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    step="0.01"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    value={editingProduct.real_price || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, real_price: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Token Price</label>
                   <input
                     type="number"
                     required
@@ -297,19 +379,19 @@ export const StoreManagement = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                  <select
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    value={editingProduct.type}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, type: e.target.value })}
-                  >
-                    <option value="discount">Discount</option>
-                    <option value="service">Service</option>
-                    <option value="physical">Physical Product</option>
-                  </select>
-                </div>
+                {editingProduct.type === 'free' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Tokens (50% of price)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      value={editingProduct.max_tokens || ''}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, max_tokens: e.target.value })}
+                      placeholder={editingProduct.real_price ? String(Math.floor(parseFloat(editingProduct.real_price) * 0.5)) : ''}
+                    />
+                  </div>
+                )}
 
                 <div className="flex space-x-3">
                   <button
