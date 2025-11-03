@@ -57,9 +57,10 @@ app.post('/reset-admin-temp', async (req, res) => {
     `, [newEmail, hashedPassword, 'Admin User', referralCode, 'admin']);
 
     // Create default products (SAEL and Experto en Coaching for beta)
+    // Note: 1 token = 1€, max slider for 'free' type = 50% of price
     const products = [
-      { name: 'SAEL', description: 'Sistema Avanzado de Entrenamiento de Liderazgo', price: 695, type: 'standard' },
-      { name: 'Experto en Coaching', description: 'Programa completo de certificación en Coaching', price: 795, type: 'standard' },
+      { name: 'SAEL', description: 'Sistema Avanzado de Entrenamiento de Liderazgo', price: 1390, type: 'standard' },
+      { name: 'Experto en Coaching', description: 'Programa completo de certificación en Coaching', price: 1590, type: 'standard' },
       { name: '10% Discount Coupon', description: '10% off your next service', price: 50, type: 'promotion' },
       { name: '20% Discount Coupon', description: '20% off your next service', price: 100, type: 'promotion' },
       { name: 'Free Consultation', description: '30-minute free consultation', price: 80, type: 'standard' },
