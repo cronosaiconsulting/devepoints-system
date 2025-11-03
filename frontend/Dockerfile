@@ -18,8 +18,8 @@ RUN ls -lh index.html && wc -l index.html && file index.html && grep -c "root" i
 
 # Build the application
 RUN echo "=== Cleaning and building ===" && \
-    rm -rf dist && \
-    npx vite build --logLevel info --force
+    rm -rf dist node_modules/.vite && \
+    NODE_ENV=production npx vite build
 
 # Show what was built
 RUN echo "=== DIST FILES ===" && find dist -type f -exec ls -lh {} \;
