@@ -4,7 +4,7 @@ import { userService } from './userService';
 export const storeService = {
   async getProducts() {
     const result = await pool.query(
-      `SELECT id, name, description, price, real_price, max_tokens, type, created_at
+      `SELECT id, name, description, price, real_price, max_tokens, type, token_offers, created_at
        FROM products
        WHERE active = true
        ORDER BY price ASC`

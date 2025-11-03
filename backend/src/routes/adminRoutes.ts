@@ -67,19 +67,26 @@ router.get('/users/search', async (req, res) => {
   }
 });
 
+const tokenOfferSchema = z.object({
+  tokens: z.number().min(0),
+  money: z.number().min(0),
+  summary: z.string()
+});
+
 const productSchema = z.object({
   name: z.string(),
   description: z.string(),
   price: z.number().positive(),
   real_price: z.number().positive().optional(),
   max_tokens: z.number().positive().optional(),
-  type: z.enum(['standard', 'promotion', 'free'])
+  type: z.enum(['standard', 'promotion', 'free']),
+  token_offers: z.array(tokenOfferSchema).optional()
 });
 
 router.post('/products', async (req, res) => {
   try {
-    const { name, description, price, real_price, max_tokens, type } = productSchema.parse(req.body);
-    const product = await adminService.createProduct(name, description, price, type, real_price, max_tokens);
+    const { name, description, price, real_price, max_tokens, type, token_offers } = productSchema.parse(req.body);
+    const product = await adminService.createProduct(name, description, price, type, real_price, max_tokens, token_offers);
     res.json({ success: true, product });
   } catch (error: any) {
     res.status(400).json({ error: error.message });

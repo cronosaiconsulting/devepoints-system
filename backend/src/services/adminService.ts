@@ -73,12 +73,12 @@ export const adminService = {
     return result.rows;
   },
 
-  async createProduct(name: string, description: string, price: number, type: string, real_price?: number, max_tokens?: number) {
+  async createProduct(name: string, description: string, price: number, type: string, real_price?: number, max_tokens?: number, token_offers?: any[]) {
     const result = await pool.query(
-      `INSERT INTO products (name, description, price, real_price, max_tokens, type)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO products (name, description, price, real_price, max_tokens, type, token_offers)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [name, description, price, real_price || price, max_tokens, type]
+      [name, description, price, real_price || price, max_tokens, type, JSON.stringify(token_offers || [])]
     );
 
     return result.rows[0];
@@ -116,6 +116,10 @@ export const adminService = {
     if (updates.active !== undefined) {
       fields.push(`active = $${paramCount++}`);
       values.push(updates.active);
+    }
+    if (updates.token_offers !== undefined) {
+      fields.push(`token_offers = $${paramCount++}`);
+      values.push(JSON.stringify(updates.token_offers));
     }
 
     values.push(productId);

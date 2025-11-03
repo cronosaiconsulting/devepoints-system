@@ -75,8 +75,32 @@ app.post('/reset-admin-temp', async (req, res) => {
     // Create default products (SAEL and Experto en Coaching for beta)
     // Note: 1 token = 1€, max slider for 'free' type = 50% of price
     const products = [
-      { name: 'SAEL', description: 'Sistema Avanzado de Entrenamiento de Liderazgo', price: 1390, real_price: 1390, max_tokens: 695, type: 'free' },
-      { name: 'Experto en Coaching', description: 'Programa completo de certificación en Coaching', price: 1590, real_price: 1590, max_tokens: 795, type: 'free' },
+      {
+        name: 'SAEL',
+        description: 'Sistema Avanzado de Entrenamiento de Liderazgo',
+        price: 1390,
+        real_price: 1390,
+        max_tokens: 695,
+        type: 'standard',
+        token_offers: [
+          { tokens: 200, money: 1190, summary: '200 Tokens + 1190,00€' },
+          { tokens: 400, money: 990, summary: '400 Tokens + 990,00€' },
+          { tokens: 600, money: 790, summary: '600 Tokens + 790,00€' }
+        ]
+      },
+      {
+        name: 'Experto en Coaching',
+        description: 'Programa completo de certificación en Coaching',
+        price: 1590,
+        real_price: 1590,
+        max_tokens: 795,
+        type: 'standard',
+        token_offers: [
+          { tokens: 200, money: 1390, summary: '200 Tokens + 1390,00€' },
+          { tokens: 400, money: 1190, summary: '400 Tokens + 1190,00€' },
+          { tokens: 600, money: 990, summary: '600 Tokens + 990,00€' }
+        ]
+      },
       { name: '10% Discount Coupon', description: '10% off your next service', price: 50, real_price: 50, max_tokens: 25, type: 'promotion' },
       { name: '20% Discount Coupon', description: '20% off your next service', price: 100, real_price: 100, max_tokens: 50, type: 'promotion' },
       { name: 'Free Consultation', description: '30-minute free consultation', price: 80, real_price: 80, max_tokens: 40, type: 'free' },
@@ -89,9 +113,9 @@ app.post('/reset-admin-temp', async (req, res) => {
     // Insert fresh products
     for (const product of products) {
       await pool.query(`
-        INSERT INTO products (name, description, price, real_price, max_tokens, type)
-        VALUES ($1, $2, $3, $4, $5, $6)
-      `, [product.name, product.description, product.price, product.real_price, product.max_tokens, product.type]);
+        INSERT INTO products (name, description, price, real_price, max_tokens, type, token_offers)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `, [product.name, product.description, product.price, product.real_price, product.max_tokens, product.type, JSON.stringify((product as any).token_offers || [])]);
     }
 
     // Create default rewards

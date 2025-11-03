@@ -10,6 +10,7 @@
     "migrate": "tsx src/scripts/migrate.ts",
     "migrate:updates": "tsx src/scripts/migrate-updates.ts",
     "migrate:settings": "tsx src/scripts/migrate-settings.ts",
+    "migrate:tokenoffers": "tsx src/scripts/migrate-token-offers.ts",
     "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {

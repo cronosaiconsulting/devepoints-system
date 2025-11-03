@@ -15,7 +15,8 @@ export const StoreManagement = () => {
     price: '',
     realPrice: '',
     maxTokens: '',
-    type: 'standard'
+    type: 'standard',
+    tokenOffers: [] as Array<{tokens: number, money: number, summary: string}>
   });
 
   useEffect(() => {
@@ -51,10 +52,14 @@ export const StoreManagement = () => {
         payload.max_tokens = parseInt(productForm.maxTokens);
       }
 
+      if (productForm.type === 'standard' && productForm.tokenOffers.length > 0) {
+        payload.token_offers = productForm.tokenOffers;
+      }
+
       await adminAPI.createProduct(payload.name, payload.description, payload.price, payload.type);
       alert('¡Producto creado exitosamente!');
       setShowCreateModal(false);
-      setProductForm({ name: '', description: '', price: '', realPrice: '', maxTokens: '', type: 'standard' });
+      setProductForm({ name: '', description: '', price: '', realPrice: '', maxTokens: '', type: 'standard', tokenOffers: [] });
       loadProducts();
     } catch (error: any) {
       alert(error.response?.data?.error || 'Creación fallida');
@@ -258,6 +263,48 @@ export const StoreManagement = () => {
                     onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                   />
                 </div>
+
+                {productForm.type === 'standard' && (
+                  <div className="border-t pt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Ofertas Múltiples de Tokens</label>
+                    <div className="space-y-2">
+                      {productForm.tokenOffers.map((offer, idx) => (
+                        <div key={idx} className="flex space-x-2 items-center bg-gray-50 p-2 rounded">
+                          <span className="text-sm flex-1">{offer.summary}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newOffers = productForm.tokenOffers.filter((_, i) => i !== idx);
+                              setProductForm({ ...productForm, tokenOffers: newOffers });
+                            }}
+                            className="text-red-600 hover:text-red-800 text-sm"
+                          >
+                            Eliminar
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const tokens = prompt('Cantidad de Tokens:');
+                          const money = prompt('Cantidad de Dinero (€):');
+                          if (tokens && money) {
+                            const tokensNum = parseInt(tokens);
+                            const moneyNum = parseFloat(money);
+                            const summary = `${tokensNum} Tokens + ${moneyNum.toFixed(2)}€`;
+                            setProductForm({
+                              ...productForm,
+                              tokenOffers: [...productForm.tokenOffers, { tokens: tokensNum, money: moneyNum, summary }]
+                            });
+                          }
+                        }}
+                        className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600"
+                      >
+                        + Añadir opción...
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {productForm.type === 'free' && (
                   <div>
