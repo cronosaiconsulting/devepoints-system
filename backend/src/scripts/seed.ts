@@ -16,10 +16,12 @@ async function seed() {
     const adminPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || '1234', 10);
     const adminCode = generateReferralCode();
 
+    // Delete old admin users first to ensure clean state
+    await pool.query(`DELETE FROM users WHERE role = 'admin'`);
+
     await pool.query(`
       INSERT INTO users (email, password_hash, full_name, referral_code, role)
       VALUES ($1, $2, $3, $4, $5)
-      ON CONFLICT (email) DO NOTHING
     `, [
       process.env.ADMIN_EMAIL || 'juanma@develand.es',
       adminPassword,
