@@ -97,14 +97,14 @@ export const userService = {
   async getBalance(userId: number) {
     const result = await pool.query(
       `SELECT
-        COALESCE(SUM(CASE WHEN type IN ('earn', 'admin_award', 'referral') AND expired = false THEN amount ELSE 0 END), 0) -
-        COALESCE(SUM(CASE WHEN type IN ('spend', 'expire') THEN amount ELSE 0 END), 0) as balance
+        COALESCE(SUM(CASE WHEN type IN ('earn', 'admin_award', 'referral') AND expired = false AND (refunded = false OR refunded IS NULL) THEN amount ELSE 0 END), 0) -
+        COALESCE(SUM(CASE WHEN type IN ('spend', 'expire') AND (refunded = false OR refunded IS NULL) THEN amount ELSE 0 END), 0) as balance
        FROM transactions
        WHERE user_id = $1`,
       [userId]
     );
 
-    return result.rows[0].balance || 0;
+    return parseInt(result.rows[0].balance) || 0;
   },
 
   async getTransactionHistory(userId: number) {

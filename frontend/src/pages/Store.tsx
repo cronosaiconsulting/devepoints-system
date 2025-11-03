@@ -97,16 +97,13 @@ export const Store = () => {
                 <div className="mb-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="flex items-center">
-                        <Coins className="w-5 h-5 text-blue-600 mr-1" />
-                        <span className="text-2xl font-bold text-blue-600">{product.price}</span>
-                        <span className="text-sm text-gray-500 ml-2">tokens</span>
+                      <div className="flex items-center mb-1">
+                        <span className="text-3xl font-bold text-blue-600">€{product.real_price || product.price}</span>
                       </div>
-                      {product.real_price && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          Real value: €{product.real_price}
-                        </p>
-                      )}
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Coins className="w-4 h-4 text-gray-500 mr-1" />
+                        <span>{product.price} Tokens Develand</span>
+                      </div>
                     </div>
                   </div>
                 </div>

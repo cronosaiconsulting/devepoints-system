@@ -9,10 +9,15 @@ export const Admin = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [awardForm, setAwardForm] = useState({ amount: '', description: '', expiryDays: '180' });
+  const [awardForm, setAwardForm] = useState({ amount: '', description: '', expiryDays: '180', observations: '' });
+  const [rewards, setRewards] = useState<any[]>([]);
+  const [rewardSearchQuery, setRewardSearchQuery] = useState('');
+  const [showRewardDropdown, setShowRewardDropdown] = useState(false);
+  const [selectedReward, setSelectedReward] = useState<any>(null);
 
   useEffect(() => {
     loadData();
+    loadRewards();
   }, []);
 
   const loadData = async () => {
@@ -28,6 +33,15 @@ export const Admin = () => {
     }
   };
 
+  const loadRewards = async () => {
+    try {
+      const response = await adminAPI.getAllRewards();
+      setRewards(response.data.rewards);
+    } catch (error) {
+      console.error('Error loading rewards:', error);
+    }
+  };
+
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     try {
@@ -37,6 +51,22 @@ export const Admin = () => {
       console.error('Search error:', error);
     }
   };
+
+  const handleSelectReward = (reward: any) => {
+    setSelectedReward(reward);
+    setAwardForm({
+      ...awardForm,
+      amount: reward.amount.toString(),
+      description: reward.event_title,
+      expiryDays: reward.default_expiry_days.toString()
+    });
+    setShowRewardDropdown(false);
+    setRewardSearchQuery('');
+  };
+
+  const filteredRewards = rewards.filter(r =>
+    r.event_title.toLowerCase().includes(rewardSearchQuery.toLowerCase())
+  );
 
   const handleAwardCoins = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,11 +80,13 @@ export const Admin = () => {
         selectedUser.id,
         parseInt(awardForm.amount),
         awardForm.description,
-        parseInt(awardForm.expiryDays)
+        parseInt(awardForm.expiryDays),
+        awardForm.observations
       );
-      alert('Coins awarded successfully!');
-      setAwardForm({ amount: '', description: '', expiryDays: '180' });
+      alert('Tokens awarded successfully!');
+      setAwardForm({ amount: '', description: '', expiryDays: '180', observations: '' });
       setSelectedUser(null);
+      setSelectedReward(null);
       loadData();
     } catch (error: any) {
       alert(error.response?.data?.error || 'Award failed');
@@ -178,13 +210,55 @@ export const Admin = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Event / Reward</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Search rewards or type custom..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    value={selectedReward ? selectedReward.event_title : awardForm.description}
+                    onChange={(e) => {
+                      setAwardForm({ ...awardForm, description: e.target.value });
+                      setRewardSearchQuery(e.target.value);
+                      setShowRewardDropdown(true);
+                      setSelectedReward(null);
+                    }}
+                    onFocus={() => setShowRewardDropdown(true)}
+                  />
+                  {showRewardDropdown && filteredRewards.length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {filteredRewards.map((reward) => (
+                        <button
+                          key={reward.id}
+                          type="button"
+                          onClick={() => handleSelectReward(reward)}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 border-b last:border-b-0"
+                        >
+                          <p className="font-semibold">{reward.event_title}</p>
+                          <p className="text-sm text-gray-600">
+                            {reward.amount} tokens - {reward.default_expiry_days} days
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {selectedReward && (
+                  <p className="text-sm text-green-600 mt-1">
+                    ✓ Using reward preset: {selectedReward.amount} tokens, {selectedReward.default_expiry_days} days
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Observations (Optional)</label>
                 <textarea
-                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  rows={3}
-                  value={awardForm.description}
-                  onChange={(e) => setAwardForm({ ...awardForm, description: e.target.value })}
+                  rows={2}
+                  placeholder="Additional notes..."
+                  value={awardForm.observations}
+                  onChange={(e) => setAwardForm({ ...awardForm, observations: e.target.value })}
                 />
               </div>
 
