@@ -11,6 +11,7 @@
     "migrate:updates": "tsx src/scripts/migrate-updates.ts",
     "migrate:settings": "tsx src/scripts/migrate-settings.ts",
     "migrate:tokenoffers": "tsx src/scripts/migrate-token-offers.ts",
+    "migrate:moneypaid": "tsx src/scripts/migrate-money-paid.ts",
     "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {

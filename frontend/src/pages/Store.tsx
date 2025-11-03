@@ -40,16 +40,18 @@ export const Store = () => {
     }
   };
 
-  const handlePurchase = async (productId: number, price: number, isFree: boolean) => {
-    if (balance < price) {
+  const handlePurchase = async (productId: number, tokensToSpend?: number) => {
+    const tokensRequired = tokensToSpend || products.find(p => p.id === productId)?.price || 0;
+
+    if (balance < tokensRequired) {
       alert('¡Saldo insuficiente!');
       return;
     }
 
     setPurchasing(productId);
     try {
-      // For free products, pass the slider value as tokensSpent
-      await storeAPI.purchase(productId, isFree ? price : undefined);
+      // Pass tokensSpent if specified (for token offers or free products)
+      await storeAPI.purchase(productId, tokensToSpend);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
       // Reload balance after purchase
@@ -70,7 +72,7 @@ export const Store = () => {
       setSelectedProduct(product);
     } else {
       // For other products, purchase directly
-      handlePurchase(product.id, product.type === 'free' ? sliderValues[product.id] || 0 : product.price, product.type === 'free');
+      handlePurchase(product.id, product.type === 'free' ? sliderValues[product.id] || 0 : undefined);
     }
   };
 
@@ -231,7 +233,7 @@ export const Store = () => {
               <div className="space-y-3">
                 {/* Main option - Full token price */}
                 <button
-                  onClick={() => handlePurchase(selectedProduct.id, selectedProduct.price, false)}
+                  onClick={() => handlePurchase(selectedProduct.id, selectedProduct.price)}
                   disabled={balance < selectedProduct.price || purchasing === selectedProduct.id}
                   className={`w-full p-4 rounded-lg font-semibold transition-colors text-left ${
                     balance < selectedProduct.price
@@ -254,7 +256,7 @@ export const Store = () => {
                   return (
                     <button
                       key={idx}
-                      onClick={() => canAfford ? handlePurchase(selectedProduct.id, offer.tokens, false) : null}
+                      onClick={() => canAfford ? handlePurchase(selectedProduct.id, offer.tokens) : null}
                       disabled={!canAfford || purchasing === selectedProduct.id}
                       className={`w-full p-4 rounded-lg font-semibold transition-colors text-left ${
                         !canAfford

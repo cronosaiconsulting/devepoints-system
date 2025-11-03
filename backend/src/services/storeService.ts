@@ -61,12 +61,16 @@ export const storeService = {
       throw new Error('Insufficient balance');
     }
 
+    // Calculate money_paid (remaining price after tokens)
+    const realPrice = product.real_price || product.price;
+    const moneyPaid = Math.max(0, realPrice - actualTokensSpent);
+
     // Create order
     const orderResult = await pool.query(
-      `INSERT INTO orders (user_id, product_id, coins_spent, status)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO orders (user_id, product_id, coins_spent, money_paid, status)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING id, created_at`,
-      [userId, productId, actualTokensSpent, 'completed']
+      [userId, productId, actualTokensSpent, moneyPaid, 'completed']
     );
 
     // Deduct coins
@@ -86,16 +90,33 @@ export const storeService = {
   },
 
   async getOrderHistory(userId: number) {
-    const result = await pool.query(
-      `SELECT o.id, o.coins_spent, o.status, o.created_at,
-              p.name as product_name, p.description as product_description, p.type as product_type
-       FROM orders o
-       JOIN products p ON o.product_id = p.id
-       WHERE o.user_id = $1
-       ORDER BY o.created_at DESC`,
-      [userId]
-    );
-
-    return result.rows;
+    try {
+      // Try with money_paid column
+      const result = await pool.query(
+        `SELECT o.id, o.coins_spent, o.money_paid, o.status, o.created_at,
+                p.name as product_name, p.description as product_description, p.type as product_type
+         FROM orders o
+         JOIN products p ON o.product_id = p.id
+         WHERE o.user_id = $1
+         ORDER BY o.created_at DESC`,
+        [userId]
+      );
+      return result.rows;
+    } catch (error: any) {
+      // If money_paid column doesn't exist, query without it
+      if (error.code === '42703') {
+        const result = await pool.query(
+          `SELECT o.id, o.coins_spent, o.status, o.created_at,
+                  p.name as product_name, p.description as product_description, p.type as product_type
+           FROM orders o
+           JOIN products p ON o.product_id = p.id
+           WHERE o.user_id = $1
+           ORDER BY o.created_at DESC`,
+          [userId]
+        );
+        return result.rows.map((row: any) => ({ ...row, money_paid: null }));
+      }
+      throw error;
+    }
   }
 };

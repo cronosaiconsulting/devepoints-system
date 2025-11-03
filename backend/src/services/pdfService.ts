@@ -9,6 +9,7 @@ export interface CouponData {
   tokensSpent: number;
   productPrice: number;
   remainingPrice: number;
+  moneyPaid?: number;
   customerName: string;
   purchaseDate: Date;
 }
@@ -32,19 +33,22 @@ export const pdfService = {
 
         // Add logo at the top middle - 1/3 of page width
         const logoPath = path.join(__dirname, '../../assets/logo_develand.png');
+        let currentY = 50;
         if (fs.existsSync(logoPath)) {
           const pageWidth = 595; // A4 width in points
           const logoWidth = pageWidth / 3; // 1/3 of page width
           const logoX = (pageWidth - logoWidth) / 2; // Center horizontally
+          const logoHeight = 80; // Approximate logo height
 
-          doc.image(logoPath, logoX, 50, {
+          doc.image(logoPath, logoX, currentY, {
             width: logoWidth,
             align: 'center'
           });
-          doc.moveDown(6); // Space after logo
+          currentY += logoHeight + 20; // Move below logo with spacing
         }
 
-        // Header with Develand branding
+        // Header with Develand branding - positioned below logo
+        doc.y = currentY;
         doc
           .fontSize(28)
           .fillColor('#2563eb')
@@ -102,6 +106,7 @@ export const pdfService = {
 
       // Financial Details
       const detailsY = doc.y;
+      const actualMoneyPaid = data.moneyPaid !== undefined ? data.moneyPaid : data.remainingPrice;
 
       // Left column
       doc
@@ -128,11 +133,13 @@ export const pdfService = {
         .text(`${data.tokensSpent} tokens (€${data.tokensSpent.toFixed(2)})`, 350, doc.y, { align: 'right', width: 195 })
         .moveDown(0.5);
 
+      // Show "Gratis" if money_paid is 0, otherwise show the amount
+      const displayAmount = actualMoneyPaid === 0 ? 'Gratis' : `€${actualMoneyPaid.toFixed(2)}`;
       doc
         .fontSize(20)
-        .fillColor('#dc2626')
+        .fillColor(actualMoneyPaid === 0 ? '#16a34a' : '#dc2626')
         .font('Helvetica-Bold')
-        .text(`€${data.remainingPrice.toFixed(2)}`, 350, doc.y + 8, { align: 'right', width: 195 });
+        .text(displayAmount, 350, doc.y + 8, { align: 'right', width: 195 });
 
       doc.moveDown(3);
 
