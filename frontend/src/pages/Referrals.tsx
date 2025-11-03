@@ -84,32 +84,32 @@ export const Referrals = () => {
           </div>
 
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6">
-            <h3 className="text-xl font-bold mb-4">How It Works</h3>
+            <h3 className="text-xl font-bold mb-4">¿Cómo Funciona?</h3>
             <div className="space-y-3">
               <div className="flex items-start">
                 <div className="bg-white text-blue-600 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0">
                   1
                 </div>
-                <p>Share your referral link with friends and colleagues</p>
+                <p>Comparte tu enlace de referido con amigos y colegas</p>
               </div>
               <div className="flex items-start">
                 <div className="bg-white text-blue-600 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0">
                   2
                 </div>
-                <p>They sign up using your link and get bonus Tokens Develand</p>
+                <p>Ellos se registran usando tu enlace y obtienen Tokens Develand de bonificación</p>
               </div>
               <div className="flex items-start">
                 <div className="bg-white text-blue-600 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0">
                   3
                 </div>
-                <p>You earn reward Tokens Develand for each successful referral!</p>
+                <p>¡Tú ganas Tokens Develand de recompensa por cada referido exitoso!</p>
               </div>
             </div>
           </div>
 
           <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-sm text-yellow-800">
-              <strong>Tip:</strong> Referred users get bonus coins when they sign up, making it a win-win for everyone!
+              <strong>Consejo:</strong> ¡Los usuarios referidos obtienen tokens de bonificación al registrarse, haciendo que sea beneficioso para todos!
             </p>
           </div>
         </div>

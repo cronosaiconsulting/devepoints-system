@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Package, TrendingUp, ShoppingCart, Receipt, BarChart3, Gift } from 'lucide-react';
+import { LayoutDashboard, Users, Package, TrendingUp, ShoppingCart, Receipt, BarChart3, Gift, Settings } from 'lucide-react';
 
 export const AdminSidebar = () => {
   const location = useLocation();
@@ -12,6 +12,7 @@ export const AdminSidebar = () => {
     { path: '/admin/transactions', label: 'Transacciones', icon: Receipt },
     { path: '/admin/orders', label: 'Pedidos', icon: ShoppingCart },
     { path: '/admin/analytics', label: 'Analíticas', icon: BarChart3 },
+    { path: '/admin/settings', label: 'Configuración', icon: Settings },
   ];
 
   const isActive = (path: string) => {

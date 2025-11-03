@@ -97,3 +97,8 @@ export const adminAPI = {
   refundTransaction: (transactionId: number, reason?: string) =>
     api.post(`/admin/transactions/${transactionId}/refund`, { reason })
 };
+
+export const settingsAPI = {
+  getAll: () => api.get('/settings'),
+  update: (key: string, value: string) => api.put(`/settings/${key}`, { value })
+};

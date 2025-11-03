@@ -11,6 +11,7 @@ import { StoreManagement } from './pages/admin/StoreManagement';
 import { TransactionsView } from './pages/admin/TransactionsView';
 import { OrdersView } from './pages/admin/OrdersView';
 import { AnalyticsDashboard } from './pages/admin/AnalyticsDashboard';
+import { SettingsView } from './pages/admin/SettingsView';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuth();
@@ -107,6 +108,14 @@ function AppRoutes() {
         element={
           <AdminRoute>
             <AnalyticsDashboard />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/settings"
+        element={
+          <AdminRoute>
+            <SettingsView />
           </AdminRoute>
         }
       />
