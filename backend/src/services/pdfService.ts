@@ -141,7 +141,7 @@ export const pdfService = {
         .font('Helvetica-Bold')
         .text(displayAmount, 350, doc.y + 8, { align: 'right', width: 195 });
 
-      doc.moveDown(3);
+      doc.moveDown(1.5);
 
       // Separator line
       doc

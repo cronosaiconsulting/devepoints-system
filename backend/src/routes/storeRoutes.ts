@@ -20,13 +20,14 @@ router.get('/products', async (req, res) => {
 
 const purchaseSchema = z.object({
   productId: z.number(),
-  tokensSpent: z.number().positive().optional()
+  tokensSpent: z.number().positive().optional(),
+  moneyPaid: z.number().min(0).optional()
 });
 
 router.post('/purchase', async (req, res) => {
   try {
-    const { productId, tokensSpent } = purchaseSchema.parse(req.body);
-    const order = await storeService.purchaseProduct(req.user!.userId, productId, tokensSpent);
+    const { productId, tokensSpent, moneyPaid } = purchaseSchema.parse(req.body);
+    const order = await storeService.purchaseProduct(req.user!.userId, productId, tokensSpent, moneyPaid);
     res.json({ success: true, order });
   } catch (error: any) {
     res.status(400).json({ error: error.message });

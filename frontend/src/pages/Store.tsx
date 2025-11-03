@@ -40,7 +40,7 @@ export const Store = () => {
     }
   };
 
-  const handlePurchase = async (productId: number, tokensToSpend?: number) => {
+  const handlePurchase = async (productId: number, tokensToSpend?: number, moneyToPay?: number) => {
     const tokensRequired = tokensToSpend || products.find(p => p.id === productId)?.price || 0;
 
     if (balance < tokensRequired) {
@@ -50,8 +50,8 @@ export const Store = () => {
 
     setPurchasing(productId);
     try {
-      // Pass tokensSpent if specified (for token offers or free products)
-      await storeAPI.purchase(productId, tokensToSpend);
+      // Pass tokensSpent and moneyPaid (from token offer)
+      await storeAPI.purchase(productId, tokensToSpend, moneyToPay);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
       // Reload balance after purchase
@@ -253,9 +253,9 @@ export const Store = () => {
               <p className="text-gray-600 mb-6">{selectedProduct.description}</p>
 
               <div className="space-y-3">
-                {/* Main option - Full token price */}
+                {/* Main option - Full token price (money_paid = 0, free) */}
                 <button
-                  onClick={() => handlePurchase(selectedProduct.id, selectedProduct.price)}
+                  onClick={() => handlePurchase(selectedProduct.id, selectedProduct.price, 0)}
                   disabled={balance < selectedProduct.price || purchasing === selectedProduct.id}
                   className={`w-full p-4 rounded-lg font-semibold transition-colors text-left ${
                     balance < selectedProduct.price
@@ -278,7 +278,7 @@ export const Store = () => {
                   return (
                     <button
                       key={idx}
-                      onClick={() => canAfford ? handlePurchase(selectedProduct.id, offer.tokens) : null}
+                      onClick={() => canAfford ? handlePurchase(selectedProduct.id, offer.tokens, offer.money) : null}
                       disabled={!canAfford || purchasing === selectedProduct.id}
                       className={`w-full p-4 rounded-lg font-semibold transition-colors text-left ${
                         !canAfford

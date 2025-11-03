@@ -27,7 +27,7 @@ export const storeService = {
     }
   },
 
-  async purchaseProduct(userId: number, productId: number, tokensSpent?: number) {
+  async purchaseProduct(userId: number, productId: number, tokensSpent?: number, moneyPaid?: number) {
     // Get product
     const productResult = await pool.query(
       'SELECT * FROM products WHERE id = $1 AND active = true',
@@ -61,16 +61,18 @@ export const storeService = {
       throw new Error('Insufficient balance');
     }
 
-    // Calculate money_paid (remaining price after tokens)
+    // Calculate money_paid
+    // If provided by frontend (from token offer), use it
+    // Otherwise calculate as (remaining price after tokens)
     const realPrice = product.real_price || product.price;
-    const moneyPaid = Math.max(0, realPrice - actualTokensSpent);
+    const actualMoneyPaid = moneyPaid !== undefined ? moneyPaid : Math.max(0, realPrice - actualTokensSpent);
 
     // Create order
     const orderResult = await pool.query(
       `INSERT INTO orders (user_id, product_id, coins_spent, money_paid, status)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, created_at`,
-      [userId, productId, actualTokensSpent, moneyPaid, 'completed']
+      [userId, productId, actualTokensSpent, actualMoneyPaid, 'completed']
     );
 
     // Deduct coins
