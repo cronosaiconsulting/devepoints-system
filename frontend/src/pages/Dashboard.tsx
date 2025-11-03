@@ -166,31 +166,42 @@ export const Dashboard = () => {
                     <th className="text-left py-3 px-4">Fecha</th>
                     <th className="text-left py-3 px-4">Producto</th>
                     <th className="text-right py-3 px-4">Tokens Gastados</th>
+                    <th className="text-right py-3 px-4">Precio Final</th>
                     <th className="text-center py-3 px-4">Cupón</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map((order) => (
-                    <tr key={order.id} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4">{format(new Date(order.created_at), 'dd MMM yyyy')}</td>
-                      <td className="py-3 px-4">
-                        <div className="font-semibold">{order.product_name}</div>
-                        <div className="text-sm text-gray-600">{order.product_description}</div>
-                      </td>
-                      <td className="py-3 px-4 text-right font-semibold text-red-600">
-                        {order.coins_spent} tokens
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        <button
-                          onClick={() => handlePrintCoupon(order.id)}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2 mx-auto"
-                        >
-                          <Printer className="w-4 h-4" />
-                          <span>Imprimir cupón</span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {orders.map((order) => {
+                    const moneyPaid = order.money_paid !== null && order.money_paid !== undefined
+                      ? parseFloat(order.money_paid)
+                      : null;
+                    const isFree = moneyPaid === 0;
+
+                    return (
+                      <tr key={order.id} className="border-b hover:bg-gray-50">
+                        <td className="py-3 px-4">{format(new Date(order.created_at), 'dd MMM yyyy')}</td>
+                        <td className="py-3 px-4">
+                          <div className="font-semibold">{order.product_name}</div>
+                          <div className="text-sm text-gray-600">{order.product_description}</div>
+                        </td>
+                        <td className="py-3 px-4 text-right font-semibold text-red-600">
+                          {order.coins_spent} tokens
+                        </td>
+                        <td className="py-3 px-4 text-right font-bold text-green-600">
+                          {isFree ? 'GRATIS' : moneyPaid !== null ? `€${moneyPaid.toFixed(2)}` : '-'}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <button
+                            onClick={() => handlePrintCoupon(order.id)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2 mx-auto"
+                          >
+                            <Printer className="w-4 h-4" />
+                            <span>Imprimir cupón</span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

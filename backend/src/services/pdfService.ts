@@ -150,7 +150,7 @@ export const pdfService = {
         .strokeColor('#d1d5db')
         .stroke();
 
-      doc.moveDown(2);
+      doc.moveDown(1);
 
       // Instructions
       doc
