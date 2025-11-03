@@ -1,0 +1,16 @@
+:{$PORT}
+
+root * dist
+encode gzip
+try_files {path} /index.html
+file_server
+
+header {
+    X-Content-Type-Options nosniff
+    X-Frame-Options DENY
+    Referrer-Policy no-referrer-when-downgrade
+}
+
+handle /health {
+    respond "OK" 200
+}
