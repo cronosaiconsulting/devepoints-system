@@ -2,8 +2,9 @@ FROM node:20 AS build
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY package*.json ./
-RUN npm ci --only=production=false
+# Note: Only copy package.json to avoid npm optional dependencies bug with package-lock.json
+COPY package.json ./
+RUN npm install
 
 # Copy all source files
 COPY index.html vite.config.ts tsconfig.json tsconfig.node.json ./
