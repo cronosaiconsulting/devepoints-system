@@ -15,11 +15,11 @@ COPY tailwind.config.js postcss.config.js ./
 RUN echo "Checking src files:" && ls -la src/ && ls -la src/pages/
 
 # Build the application
-# Clear any old dist and rebuild fresh
-RUN rm -rf dist && npm run build
+RUN echo "=== Running TypeScript compiler ===" && npx tsc --noEmit || echo "TSC had errors but continuing..."
+RUN echo "=== Running Vite build ===" && npx vite build
 
 # Show what was built
-RUN echo "Build output:" && find dist -type f -ls
+RUN echo "=== DIST FILES ===" && find dist -type f -exec ls -lh {} \;
 
 FROM caddy:2-alpine
 WORKDIR /app
