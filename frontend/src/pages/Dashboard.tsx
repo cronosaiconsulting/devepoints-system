@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { userAPI, storeAPI } from '../api/client';
+import { userAPI, storeAPI, settingsAPI } from '../api/client';
 import { Navbar } from '../components/Navbar';
 import { Coins, Clock, TrendingUp, AlertCircle, Printer } from 'lucide-react';
 import { format } from 'date-fns';
@@ -10,6 +10,7 @@ export const Dashboard = () => {
   const [expiring, setExpiring] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expiringSoonDays, setExpiringSoonDays] = useState(30);
 
   useEffect(() => {
     loadData();
@@ -17,17 +18,24 @@ export const Dashboard = () => {
 
   const loadData = async () => {
     try {
-      const [balanceRes, historyRes, expiringRes, ordersRes] = await Promise.all([
+      const [balanceRes, historyRes, expiringRes, ordersRes, settingsRes] = await Promise.all([
         userAPI.getBalance(),
         userAPI.getHistory(),
         userAPI.getExpiring(),
-        storeAPI.getOrders()
+        storeAPI.getOrders(),
+        settingsAPI.getAll()
       ]);
 
       setBalance(balanceRes.data.balance);
       setHistory(historyRes.data.history);
       setExpiring(expiringRes.data.expiringCoins);
       setOrders(ordersRes.data.orders);
+
+      // Get expiring_soon_days from settings
+      const expiringSetting = settingsRes.data.settings.find((s: any) => s.key === 'expiring_soon_days');
+      if (expiringSetting) {
+        setExpiringSoonDays(parseInt(expiringSetting.value));
+      }
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -110,11 +118,13 @@ export const Dashboard = () => {
               <div>
                 <p className="text-gray-600 text-sm">
                   Expiran Pronto
-                  {expiring.length > 0 && expiring[0].expires_at && (
-                    <span className="text-xs ml-1">
-                      ({format(new Date(expiring[0].expires_at), 'dd/MM/yyyy')})
-                    </span>
-                  )}
+                  <span className="text-xs ml-1">
+                    ({(() => {
+                      const futureDate = new Date();
+                      futureDate.setDate(futureDate.getDate() + expiringSoonDays);
+                      return format(futureDate, 'dd/MM/yyyy');
+                    })()})
+                  </span>
                 </p>
                 <p className="text-3xl font-bold mt-2">
                   {expiring.reduce((sum, item) => sum + parseInt(item.expiring_amount), 0)}
