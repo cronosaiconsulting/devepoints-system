@@ -4,11 +4,11 @@ COPY package.json ./
 RUN npm install
 COPY . ./
 RUN npm run build
-RUN ls -la dist
+RUN echo "=== Build complete, dist contents: ===" && ls -laR dist
 
 FROM caddy:2-alpine
 WORKDIR /app
 COPY Caddyfile ./
 COPY --from=build /app/dist ./dist
-RUN ls -la dist
+RUN echo "=== Caddy stage, dist contents: ===" && ls -laR dist
 CMD ["caddy", "run", "--config", "Caddyfile", "--adapter", "caddyfile"]
