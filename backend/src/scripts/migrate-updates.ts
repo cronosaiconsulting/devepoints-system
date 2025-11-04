@@ -64,6 +64,50 @@ async function migrateUpdates() {
     `);
     console.log('✓ Updated existing products with real_price');
 
+    // 7. Add token_offers column for products
+    await pool.query(`
+      ALTER TABLE products
+      ADD COLUMN IF NOT EXISTS token_offers JSONB DEFAULT '[]'::jsonb;
+    `);
+    console.log('✓ Added token_offers column');
+
+    // 8. Add image_url column for products
+    await pool.query(`
+      ALTER TABLE products
+      ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT '';
+    `);
+    console.log('✓ Added image_url column');
+
+    // 9. Add logo_url setting
+    await pool.query(`
+      INSERT INTO settings (key, value, description)
+      VALUES ('logo_url', '', 'URL del logo principal (usar IMGUR)')
+      ON CONFLICT (key) DO NOTHING;
+    `);
+    console.log('✓ Added logo_url setting');
+
+    // 10. Add money_paid column to orders
+    await pool.query(`
+      ALTER TABLE orders
+      ADD COLUMN IF NOT EXISTS money_paid DECIMAL(10,2) DEFAULT 0;
+    `);
+    console.log('✓ Added money_paid column to orders');
+
+    // 11. Add description column to rewards
+    await pool.query(`
+      ALTER TABLE rewards
+      ADD COLUMN IF NOT EXISTS description TEXT DEFAULT '';
+    `);
+    console.log('✓ Added description column to rewards');
+
+    // 12. Update existing rewards to have empty description
+    await pool.query(`
+      UPDATE rewards
+      SET description = ''
+      WHERE description IS NULL;
+    `);
+    console.log('✓ Updated existing rewards with empty description');
+
     console.log('✅ Schema updates completed successfully!');
     process.exit(0);
   } catch (error) {
