@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { adminAPI } from '../api/client';
+import { Navbar } from '../components/Navbar';
 import { Zap, Calendar, Coins, ChevronRight } from 'lucide-react';
 
 interface Impulso {
@@ -34,14 +35,19 @@ export default function Impulsos() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Cargando impulsos...</div>
-      </div>
+      <>
+        <Navbar />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-xl">Cargando impulsos...</div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 px-4">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 flex items-center mb-2">
@@ -162,6 +168,7 @@ export default function Impulsos() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
