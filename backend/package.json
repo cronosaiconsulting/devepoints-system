@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc && npm run migrate:updates",
-    "start": "node dist/index.js",
+    "build": "tsc",
+    "start": "npm run migrate:updates && node dist/index.js",
     "migrate": "tsx src/scripts/migrate.ts",
     "migrate:updates": "tsx src/scripts/migrate-updates.ts",
     "migrate:settings": "tsx src/scripts/migrate-settings.ts",
