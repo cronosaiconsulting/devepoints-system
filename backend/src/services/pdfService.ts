@@ -31,20 +31,20 @@ export const pdfService = {
           reject(err);
         });
 
-        // Add logo at the top middle - 1/3 of page width
+        // Add logo at the top middle - smaller size
         const logoPath = path.join(__dirname, '../../assets/logo_develand.png');
         let currentY = 50;
         if (fs.existsSync(logoPath)) {
           const pageWidth = 595; // A4 width in points
-          const logoWidth = pageWidth / 3; // 1/3 of page width
+          const logoWidth = 120; // Fixed smaller width
           const logoX = (pageWidth - logoWidth) / 2; // Center horizontally
-          const logoHeight = 80; // Approximate logo height
+          const logoHeight = 50; // Smaller logo height
 
           doc.image(logoPath, logoX, currentY, {
             width: logoWidth,
             align: 'center'
           });
-          currentY += logoHeight + 20; // Move below logo with spacing
+          currentY += logoHeight + 15; // Move below logo with spacing
         }
 
         // Header with Develand branding - positioned below logo

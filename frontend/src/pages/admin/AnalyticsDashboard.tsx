@@ -27,7 +27,7 @@ export const AnalyticsDashboard = () => {
       <div className="flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl">Loading...</div>
+          <div className="text-xl">Cargando...</div>
         </div>
       </div>
     );
@@ -37,20 +37,20 @@ export const AnalyticsDashboard = () => {
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
 
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 flex items-center">
             <BarChart3 className="w-8 h-8 mr-3 text-blue-600" />
-            Analytics Dashboard
+            Panel de Análisis
           </h1>
-          <p className="text-gray-600">System insights and trends</p>
+          <p className="text-gray-600">Información y tendencias del sistema</p>
         </div>
 
         {/* Top Users */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-bold mb-4 flex items-center">
             <TrendingUp className="w-6 h-6 mr-2 text-green-600" />
-            Top Users by Balance
+            Mejores Usuarios por Saldo
           </h2>
           <div className="space-y-3">
             {analytics?.topUsers?.map((user: any, idx: number) => (
@@ -79,16 +79,16 @@ export const AnalyticsDashboard = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-bold mb-4 flex items-center">
             <Coins className="w-6 h-6 mr-2 text-purple-600" />
-            Popular Products
+            Productos Populares
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="text-left py-2 px-4">Product</th>
-                  <th className="text-left py-2 px-4">Purchases</th>
-                  <th className="text-left py-2 px-4">Total Revenue</th>
-                  <th className="text-left py-2 px-4">Price</th>
+                  <th className="text-left py-2 px-4">Producto</th>
+                  <th className="text-left py-2 px-4">Compras</th>
+                  <th className="text-left py-2 px-4">Ingresos Totales</th>
+                  <th className="text-left py-2 px-4">Precio</th>
                 </tr>
               </thead>
               <tbody>

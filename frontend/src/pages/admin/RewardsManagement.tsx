@@ -45,12 +45,12 @@ export default function RewardsManagement() {
         parseInt(createForm.defaultExpiryDays),
         createForm.description
       );
-      alert('Reward created successfully!');
+      alert('¡Recompensa creada exitosamente!');
       setShowCreateModal(false);
       setCreateForm({ amount: '', eventTitle: '', defaultExpiryDays: '180', description: '' });
       loadRewards();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to create reward');
+      alert(error.response?.data?.error || 'Fallo al crear la recompensa');
     }
   };
 
@@ -62,11 +62,11 @@ export default function RewardsManagement() {
         default_expiry_days: parseInt(editForm.defaultExpiryDays),
         description: editForm.description
       });
-      alert('Reward updated successfully!');
+      alert('¡Recompensa actualizada exitosamente!');
       setEditingId(null);
       loadRewards();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to update reward');
+      alert(error.response?.data?.error || 'Fallo al actualizar la recompensa');
     }
   };
 
@@ -75,19 +75,19 @@ export default function RewardsManagement() {
       await adminAPI.updateReward(id, { active: !currentActive });
       loadRewards();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to update reward');
+      alert(error.response?.data?.error || 'Fallo al actualizar la recompensa');
     }
   };
 
   const handleDeleteReward = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this reward?')) return;
+    if (!confirm('¿Estás seguro de que quieres eliminar esta recompensa?')) return;
 
     try {
       await adminAPI.deleteReward(id);
-      alert('Reward deleted successfully!');
+      alert('¡Recompensa eliminada exitosamente!');
       loadRewards();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to delete reward');
+      alert(error.response?.data?.error || 'Fallo al eliminar la recompensa');
     }
   };
 
@@ -106,7 +106,7 @@ export default function RewardsManagement() {
       <div className="flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl">Loading...</div>
+          <div className="text-xl">Cargando...</div>
         </div>
       </div>
     );
@@ -115,18 +115,18 @@ export default function RewardsManagement() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800 flex items-center">
             <Gift className="w-8 h-8 mr-3 text-purple-600" />
-            Rewards Management
+            Gestión de Recompensas
           </h1>
           <button
             onClick={() => setShowCreateModal(true)}
             className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex items-center"
           >
             <Plus className="w-5 h-5 mr-2" />
-            Create Reward
+            Crear Recompensa
           </button>
         </div>
 
@@ -136,20 +136,20 @@ export default function RewardsManagement() {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Event Title</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Título del Evento</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descripción</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expiry Days</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Días de Expiración</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Creado</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {rewards.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                      No rewards found. Create your first reward!
+                      No se encontraron recompensas. ¡Crea tu primera recompensa!
                     </td>
                   </tr>
                 ) : (
@@ -201,7 +201,7 @@ export default function RewardsManagement() {
                             className="border rounded px-2 py-1 w-24"
                           />
                         ) : (
-                          <span className="text-gray-700">{reward.default_expiry_days} days</span>
+                          <span className="text-gray-700">{reward.default_expiry_days} días</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm">
@@ -213,7 +213,7 @@ export default function RewardsManagement() {
                               : 'bg-gray-100 text-gray-800'
                           }`}
                         >
-                          {reward.active ? 'Active' : 'Inactive'}
+                          {reward.active ? 'Activo' : 'Inactivo'}
                         </button>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
@@ -267,12 +267,12 @@ export default function RewardsManagement() {
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
             <h3 className="text-xl font-bold mb-4 flex items-center">
               <Plus className="w-6 h-6 mr-2 text-green-600" />
-              Create New Reward
+              Crear Nueva Recompensa
             </h3>
             <form onSubmit={handleCreateReward}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Event Title
+                  Título del Evento
                 </label>
                 <input
                   type="text"
@@ -284,7 +284,7 @@ export default function RewardsManagement() {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Amount (Ð)
+                  Cantidad (Ð)
                 </label>
                 <input
                   type="number"
@@ -297,7 +297,7 @@ export default function RewardsManagement() {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Default Expiry Days
+                  Días de Expiración por Defecto
                 </label>
                 <input
                   type="number"
@@ -307,7 +307,7 @@ export default function RewardsManagement() {
                   required
                   min="1"
                 />
-                <p className="text-xs text-gray-500 mt-1">Number of days before coins expire (default: 180)</p>
+                <p className="text-xs text-gray-500 mt-1">Número de días antes de que expiren las monedas (por defecto: 180)</p>
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -330,13 +330,13 @@ export default function RewardsManagement() {
                   }}
                   className="px-4 py-2 text-gray-600 hover:text-gray-800"
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   type="submit"
                   className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
                 >
-                  Create Reward
+                  Crear Recompensa
                 </button>
               </div>
             </form>

@@ -38,7 +38,7 @@ export const AdminDashboard = () => {
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
 
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Panel de Administración</h1>
           <p className="text-gray-600">Bienvenido al panel de administración de Tokens Develand</p>

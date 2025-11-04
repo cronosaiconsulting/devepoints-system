@@ -86,14 +86,14 @@ export const UsersManagement = () => {
         parseInt(awardForm.expiryDays),
         awardForm.observations || undefined
       );
-      alert('Coins awarded successfully!');
+      alert('¡Monedas otorgadas exitosamente!');
       setShowAwardModal(false);
       setSelectedUser(null);
       setSelectedReward('');
       setAwardForm({ amount: '', description: '', expiryDays: '180', observations: '' });
       loadUsers();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Award failed');
+      alert(error.response?.data?.error || 'Otorgamiento fallido');
     }
   };
 
@@ -106,12 +106,12 @@ export const UsersManagement = () => {
         createForm.fullName,
         createForm.role
       );
-      alert('User created successfully!');
+      alert('¡Usuario creado exitosamente!');
       setShowCreateModal(false);
       setCreateForm({ email: '', password: '', fullName: '', role: 'user' });
       loadUsers();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'User creation failed');
+      alert(error.response?.data?.error || 'Creación de usuario fallida');
     }
   };
 
@@ -120,7 +120,7 @@ export const UsersManagement = () => {
       <div className="flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl">Loading...</div>
+          <div className="text-xl">Cargando...</div>
         </div>
       </div>
     );
@@ -130,21 +130,21 @@ export const UsersManagement = () => {
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
 
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2 flex items-center">
               <Users className="w-8 h-8 mr-3 text-blue-600" />
-              Users Management
+              Gestión de Usuarios
             </h1>
-            <p className="text-gray-600">Manage all registered users</p>
+            <p className="text-gray-600">Gestionar todos los usuarios registrados</p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
             className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center font-semibold"
           >
             <UserPlus className="w-5 h-5 mr-2" />
-            Create User
+            Crear Usuario
           </button>
         </div>
 
@@ -153,7 +153,7 @@ export const UsersManagement = () => {
           <div className="flex space-x-2">
             <input
               type="text"
-              placeholder="Search by email or name..."
+              placeholder="Buscar por correo o nombre..."
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -164,13 +164,13 @@ export const UsersManagement = () => {
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
             >
               <Search className="w-5 h-5 mr-2" />
-              Search
+              Buscar
             </button>
             <button
               onClick={loadUsers}
               className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
             >
-              Reset
+              Restablecer
             </button>
           </div>
         </div>
@@ -180,13 +180,13 @@ export const UsersManagement = () => {
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="text-left py-3 px-4 font-semibold">User</th>
-                <th className="text-left py-3 px-4 font-semibold">Email</th>
-                <th className="text-left py-3 px-4 font-semibold">Balance</th>
-                <th className="text-left py-3 px-4 font-semibold">Referrals</th>
-                <th className="text-left py-3 px-4 font-semibold">Role</th>
-                <th className="text-left py-3 px-4 font-semibold">Joined</th>
-                <th className="text-left py-3 px-4 font-semibold">Actions</th>
+                <th className="text-left py-3 px-4 font-semibold">Usuario</th>
+                <th className="text-left py-3 px-4 font-semibold">Correo</th>
+                <th className="text-left py-3 px-4 font-semibold">Saldo</th>
+                <th className="text-left py-3 px-4 font-semibold">Referidos</th>
+                <th className="text-left py-3 px-4 font-semibold">Rol</th>
+                <th className="text-left py-3 px-4 font-semibold">Registro</th>
+                <th className="text-left py-3 px-4 font-semibold">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -217,7 +217,7 @@ export const UsersManagement = () => {
                       className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm flex items-center"
                     >
                       <Award className="w-4 h-4 mr-1" />
-                      Award
+                      Otorgar
                     </button>
                   </td>
                 </tr>
@@ -230,28 +230,28 @@ export const UsersManagement = () => {
         {showAwardModal && selectedUser && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-xl font-bold mb-4">Award Coins to {selectedUser.full_name}</h3>
+              <h3 className="text-xl font-bold mb-4">Otorgar Monedas a {selectedUser.full_name}</h3>
 
               <form onSubmit={handleAwardCoins} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Reward</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Seleccionar Recompensa</label>
                   <select
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     value={selectedReward}
                     onChange={(e) => handleRewardChange(e.target.value)}
                   >
-                    <option value="">-- Select a reward --</option>
+                    <option value="">-- Seleccionar una recompensa --</option>
                     {rewards.map((reward) => (
                       <option key={reward.id} value={reward.id}>
                         {reward.event_title} - Ð {reward.amount}
                       </option>
                     ))}
-                    <option value="others">Others (Custom)</option>
+                    <option value="others">Otros (Personalizado)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
                   <input
                     type="number"
                     required
@@ -264,7 +264,7 @@ export const UsersManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Event Title</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Título del Evento</label>
                   <textarea
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -277,19 +277,19 @@ export const UsersManagement = () => {
 
                 {selectedReward === 'others' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Observations</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
                     <textarea
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                       rows={3}
                       value={awardForm.observations}
                       onChange={(e) => setAwardForm({ ...awardForm, observations: e.target.value })}
-                      placeholder="Optional notes about this award..."
+                      placeholder="Notas opcionales sobre este premio..."
                     />
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Days</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Días de Expiración</label>
                   <input
                     type="number"
                     required
@@ -305,7 +305,7 @@ export const UsersManagement = () => {
                     type="submit"
                     className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
                   >
-                    Award Coins
+                    Otorgar Monedas
                   </button>
                   <button
                     type="button"
@@ -316,7 +316,7 @@ export const UsersManagement = () => {
                     }}
                     className="flex-1 py-2 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400"
                   >
-                    Cancel
+                    Cancelar
                   </button>
                 </div>
               </form>
@@ -330,12 +330,12 @@ export const UsersManagement = () => {
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
               <h3 className="text-xl font-bold mb-4 flex items-center">
                 <UserPlus className="w-6 h-6 mr-2 text-green-600" />
-                Create New User
+                Crear Nuevo Usuario
               </h3>
 
               <form onSubmit={handleCreateUser} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Correo</label>
                   <input
                     type="email"
                     required
@@ -346,7 +346,7 @@ export const UsersManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
                   <input
                     type="text"
                     required
@@ -357,7 +357,7 @@ export const UsersManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
                   <input
                     type="password"
                     required
@@ -366,19 +366,19 @@ export const UsersManagement = () => {
                     value={createForm.password}
                     onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
                   />
-                  <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+                  <p className="text-xs text-gray-500 mt-1">Mínimo 6 caracteres</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Rol</label>
                   <select
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     value={createForm.role}
                     onChange={(e) => setCreateForm({ ...createForm, role: e.target.value })}
                   >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
+                    <option value="user">Usuario</option>
+                    <option value="admin">Administrador</option>
                   </select>
                 </div>
 
@@ -387,7 +387,7 @@ export const UsersManagement = () => {
                     type="submit"
                     className="flex-1 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700"
                   >
-                    Create User
+                    Crear Usuario
                   </button>
                   <button
                     type="button"
@@ -397,7 +397,7 @@ export const UsersManagement = () => {
                     }}
                     className="flex-1 py-2 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400"
                   >
-                    Cancel
+                    Cancelar
                   </button>
                 </div>
               </form>

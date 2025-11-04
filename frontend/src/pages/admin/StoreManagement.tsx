@@ -124,7 +124,7 @@ export const StoreManagement = () => {
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
 
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2 flex items-center">
@@ -254,7 +254,7 @@ export const StoreManagement = () => {
                   >
                     <option value="standard">Estándar</option>
                     <option value="promotion">Promoción</option>
-                    <option value="free">Gratis</option>
+                    <option value="free">Variable</option>
                   </select>
                 </div>
 
@@ -473,7 +473,7 @@ export const StoreManagement = () => {
                   >
                     <option value="standard">Estándar</option>
                     <option value="promotion">Promoción</option>
-                    <option value="free">Gratis</option>
+                    <option value="free">Variable</option>
                   </select>
                 </div>
 

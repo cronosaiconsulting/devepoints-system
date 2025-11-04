@@ -49,7 +49,7 @@ export const Login = () => {
         navigate('/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'An error occurred');
+      setError(err.response?.data?.error || 'Ocurrió un error');
     } finally {
       setLoading(false);
     }

@@ -39,16 +39,16 @@ export const TransactionsView = () => {
   };
 
   const handleRefund = async (transactionId: number) => {
-    if (!confirm('Are you sure you want to refund this transaction?')) return;
+    if (!confirm('¿Estás seguro de que quieres reembolsar esta transacción?')) return;
 
-    const reason = prompt('Refund reason (optional):');
+    const reason = prompt('Motivo del reembolso (opcional):');
 
     try {
       await adminAPI.refundTransaction(transactionId, reason || undefined);
-      alert('Transaction refunded successfully!');
+      alert('¡Transacción reembolsada exitosamente!');
       loadTransactions();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Refund failed');
+      alert(error.response?.data?.error || 'Reembolso fallido');
     }
   };
 
@@ -67,7 +67,7 @@ export const TransactionsView = () => {
       <div className="flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl">Loading...</div>
+          <div className="text-xl">Cargando...</div>
         </div>
       </div>
     );
@@ -77,22 +77,22 @@ export const TransactionsView = () => {
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
 
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2 flex items-center">
                 <Receipt className="w-8 h-8 mr-3 text-blue-600" />
-                All Transactions
+                Todas las Transacciones
               </h1>
-              <p className="text-gray-600">Complete transaction history across all users</p>
+              <p className="text-gray-600">Historial completo de transacciones de todos los usuarios</p>
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               <Filter className="w-4 h-4 mr-2" />
-              {showFilters ? 'Hide' : 'Show'} Filters
+              {showFilters ? 'Ocultar' : 'Mostrar'} Filtros
             </button>
           </div>
         </div>
@@ -102,23 +102,23 @@ export const TransactionsView = () => {
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
                 <select
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   value={filters.type}
                   onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                 >
-                  <option value="">All Types</option>
-                  <option value="earn">Earn</option>
-                  <option value="spend">Spend</option>
-                  <option value="admin_award">Admin Award</option>
-                  <option value="referral">Referral</option>
-                  <option value="expire">Expire</option>
+                  <option value="">Todos los Tipos</option>
+                  <option value="earn">Ganar</option>
+                  <option value="spend">Gastar</option>
+                  <option value="admin_award">Premio Admin</option>
+                  <option value="referral">Referido</option>
+                  <option value="expire">Expirar</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date From</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Desde</label>
                 <input
                   type="date"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -128,7 +128,7 @@ export const TransactionsView = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date To</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Hasta</label>
                 <input
                   type="date"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -138,7 +138,7 @@ export const TransactionsView = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Min Amount</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad Mínima</label>
                 <input
                   type="number"
                   placeholder="0"
@@ -149,7 +149,7 @@ export const TransactionsView = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Max Amount</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad Máxima</label>
                 <input
                   type="number"
                   placeholder="999999"
@@ -165,7 +165,7 @@ export const TransactionsView = () => {
                   className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 flex items-center justify-center"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
-                  Reset Filters
+                  Restablecer Filtros
                 </button>
               </div>
             </div>
@@ -178,14 +178,14 @@ export const TransactionsView = () => {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="text-left py-3 px-4 font-semibold">ID</th>
-                  <th className="text-left py-3 px-4 font-semibold">User</th>
-                  <th className="text-left py-3 px-4 font-semibold">Type</th>
-                  <th className="text-left py-3 px-4 font-semibold">Amount</th>
-                  <th className="text-left py-3 px-4 font-semibold">Description</th>
-                  <th className="text-left py-3 px-4 font-semibold">Observations</th>
-                  <th className="text-left py-3 px-4 font-semibold">Expires</th>
-                  <th className="text-left py-3 px-4 font-semibold">Date</th>
-                  <th className="text-left py-3 px-4 font-semibold">Actions</th>
+                  <th className="text-left py-3 px-4 font-semibold">Usuario</th>
+                  <th className="text-left py-3 px-4 font-semibold">Tipo</th>
+                  <th className="text-left py-3 px-4 font-semibold">Cantidad</th>
+                  <th className="text-left py-3 px-4 font-semibold">Descripción</th>
+                  <th className="text-left py-3 px-4 font-semibold">Observaciones</th>
+                  <th className="text-left py-3 px-4 font-semibold">Expira</th>
+                  <th className="text-left py-3 px-4 font-semibold">Fecha</th>
+                  <th className="text-left py-3 px-4 font-semibold">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -232,12 +232,12 @@ export const TransactionsView = () => {
                           onClick={() => handleRefund(tx.id)}
                           className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200"
                         >
-                          Refund
+                          Reembolsar
                         </button>
                       )}
                       {tx.refunded && (
                         <span className="px-3 py-1 text-sm bg-gray-100 text-gray-500 rounded">
-                          Refunded
+                          Reembolsado
                         </span>
                       )}
                     </td>
