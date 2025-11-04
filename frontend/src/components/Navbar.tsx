@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, ShoppingBag, Users, Gift, LayoutDashboard, Menu, X } from 'lucide-react';
+import { LogOut, ShoppingBag, Users, Gift, LayoutDashboard, Menu, X, Zap } from 'lucide-react';
 import { useState } from 'react';
 
 export const Navbar = () => {
@@ -26,6 +26,10 @@ export const Navbar = () => {
             <Link to="/store" className="flex items-center space-x-1 hover:text-blue-200 whitespace-nowrap">
               <ShoppingBag className="w-5 h-5" />
               <span>Catálogo</span>
+            </Link>
+            <Link to="/impulsos" className="flex items-center space-x-1 hover:text-blue-200 whitespace-nowrap">
+              <Zap className="w-5 h-5" />
+              <span>Impulsos</span>
             </Link>
             <Link to="/referrals" className="flex items-center space-x-1 hover:text-blue-200 whitespace-nowrap">
               <Gift className="w-5 h-5" />
@@ -77,6 +81,14 @@ export const Navbar = () => {
               >
                 <ShoppingBag className="w-5 h-5" />
                 <span>Catálogo</span>
+              </Link>
+              <Link
+                to="/impulsos"
+                className="flex items-center space-x-2 hover:text-blue-200 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Zap className="w-5 h-5" />
+                <span>Impulsos</span>
               </Link>
               <Link
                 to="/referrals"

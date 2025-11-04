@@ -386,21 +386,46 @@ export const adminService = {
   },
 
   // Rewards CRUD
-  async createReward(amount: number, eventTitle: string, defaultExpiryDays?: number) {
-    const result = await pool.query(
-      `INSERT INTO rewards (amount, event_title, default_expiry_days)
-       VALUES ($1, $2, $3)
-       RETURNING *`,
-      [amount, eventTitle, defaultExpiryDays || 180]
-    );
-    return result.rows[0];
+  async createReward(amount: number, eventTitle: string, defaultExpiryDays?: number, description?: string) {
+    try {
+      const result = await pool.query(
+        `INSERT INTO rewards (amount, event_title, default_expiry_days, description)
+         VALUES ($1, $2, $3, $4)
+         RETURNING *`,
+        [amount, eventTitle, defaultExpiryDays || 180, description || '']
+      );
+      return result.rows[0];
+    } catch (error: any) {
+      // Fallback if description column doesn't exist
+      if (error.code === '42703') {
+        const result = await pool.query(
+          `INSERT INTO rewards (amount, event_title, default_expiry_days)
+           VALUES ($1, $2, $3)
+           RETURNING *`,
+          [amount, eventTitle, defaultExpiryDays || 180]
+        );
+        return { ...result.rows[0], description: '' };
+      }
+      throw error;
+    }
   },
 
   async getAllRewards() {
-    const result = await pool.query(
-      `SELECT * FROM rewards WHERE active = true ORDER BY created_at DESC`
-    );
-    return result.rows;
+    try {
+      const result = await pool.query(
+        `SELECT * FROM rewards WHERE active = true ORDER BY created_at DESC`
+      );
+      return result.rows;
+    } catch (error: any) {
+      // Fallback if description column doesn't exist
+      if (error.code === '42703') {
+        const result = await pool.query(
+          `SELECT id, amount, event_title, default_expiry_days, active, created_at FROM rewards WHERE active = true ORDER BY created_at DESC`
+        );
+        return result.rows.map((row: any) => ({ ...row, description: '' }));
+      }
+      throw error;
+    }
   },
 
   async searchRewards(query: string) {
@@ -430,6 +455,10 @@ export const adminService = {
     if (updates.default_expiry_days !== undefined) {
       fields.push(`default_expiry_days = $${paramCount++}`);
       values.push(updates.default_expiry_days);
+    }
+    if (updates.description !== undefined) {
+      fields.push(`description = $${paramCount++}`);
+      values.push(updates.description);
     }
     if (updates.active !== undefined) {
       fields.push(`active = $${paramCount++}`);

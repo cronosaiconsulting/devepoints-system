@@ -4,6 +4,7 @@ import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Store } from './pages/Store';
 import { Referrals } from './pages/Referrals';
+import Impulsos from './pages/Impulsos';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { UsersManagement } from './pages/admin/UsersManagement';
 import RewardsManagement from './pages/admin/RewardsManagement';
@@ -52,6 +53,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Referrals />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/impulsos"
+        element={
+          <ProtectedRoute>
+            <Impulsos />
           </ProtectedRoute>
         }
       />

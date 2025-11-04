@@ -198,13 +198,14 @@ router.get('/analytics', async (req, res) => {
 const rewardSchema = z.object({
   amount: z.number().positive(),
   eventTitle: z.string().min(1),
-  defaultExpiryDays: z.number().positive().optional()
+  defaultExpiryDays: z.number().positive().optional(),
+  description: z.string().optional()
 });
 
 router.post('/rewards', async (req, res) => {
   try {
-    const { amount, eventTitle, defaultExpiryDays } = rewardSchema.parse(req.body);
-    const reward = await adminService.createReward(amount, eventTitle, defaultExpiryDays);
+    const { amount, eventTitle, defaultExpiryDays, description } = rewardSchema.parse(req.body);
+    const reward = await adminService.createReward(amount, eventTitle, defaultExpiryDays, description);
     res.status(201).json({ success: true, reward });
   } catch (error: any) {
     res.status(400).json({ error: error.message });

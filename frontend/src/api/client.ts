@@ -82,8 +82,8 @@ export const adminAPI = {
   getAnalytics: () => api.get('/admin/analytics'),
 
   // Rewards
-  createReward: (amount: number, eventTitle: string, defaultExpiryDays?: number) =>
-    api.post('/admin/rewards', { amount, eventTitle, defaultExpiryDays }),
+  createReward: (amount: number, eventTitle: string, defaultExpiryDays?: number, description?: string) =>
+    api.post('/admin/rewards', { amount, eventTitle, defaultExpiryDays, description }),
 
   getAllRewards: () => api.get('/admin/rewards'),
 

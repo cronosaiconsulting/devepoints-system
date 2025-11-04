@@ -8,6 +8,7 @@ interface Reward {
   amount: number;
   event_title: string;
   default_expiry_days: number;
+  description?: string;
   active: boolean;
   created_at: string;
 }
@@ -17,8 +18,8 @@ export default function RewardsManagement() {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [createForm, setCreateForm] = useState({ amount: '', eventTitle: '', defaultExpiryDays: '180' });
-  const [editForm, setEditForm] = useState({ amount: '', eventTitle: '', defaultExpiryDays: '' });
+  const [createForm, setCreateForm] = useState({ amount: '', eventTitle: '', defaultExpiryDays: '180', description: '' });
+  const [editForm, setEditForm] = useState({ amount: '', eventTitle: '', defaultExpiryDays: '', description: '' });
 
   useEffect(() => {
     loadRewards();
@@ -41,11 +42,12 @@ export default function RewardsManagement() {
       await adminAPI.createReward(
         parseInt(createForm.amount),
         createForm.eventTitle,
-        parseInt(createForm.defaultExpiryDays)
+        parseInt(createForm.defaultExpiryDays),
+        createForm.description
       );
       alert('Reward created successfully!');
       setShowCreateModal(false);
-      setCreateForm({ amount: '', eventTitle: '', defaultExpiryDays: '180' });
+      setCreateForm({ amount: '', eventTitle: '', defaultExpiryDays: '180', description: '' });
       loadRewards();
     } catch (error: any) {
       alert(error.response?.data?.error || 'Failed to create reward');
@@ -57,7 +59,8 @@ export default function RewardsManagement() {
       await adminAPI.updateReward(id, {
         amount: parseInt(editForm.amount),
         event_title: editForm.eventTitle,
-        default_expiry_days: parseInt(editForm.defaultExpiryDays)
+        default_expiry_days: parseInt(editForm.defaultExpiryDays),
+        description: editForm.description
       });
       alert('Reward updated successfully!');
       setEditingId(null);
@@ -93,7 +96,8 @@ export default function RewardsManagement() {
     setEditForm({
       amount: reward.amount.toString(),
       eventTitle: reward.event_title,
-      defaultExpiryDays: reward.default_expiry_days.toString()
+      defaultExpiryDays: reward.default_expiry_days.toString(),
+      description: reward.description || ''
     });
   };
 
@@ -133,6 +137,7 @@ export default function RewardsManagement() {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Event Title</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descripción</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expiry Days</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -143,7 +148,7 @@ export default function RewardsManagement() {
               <tbody className="divide-y divide-gray-200">
                 {rewards.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
                       No rewards found. Create your first reward!
                     </td>
                   </tr>
@@ -161,6 +166,18 @@ export default function RewardsManagement() {
                           />
                         ) : (
                           <span className="font-medium text-gray-900">{reward.event_title}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {editingId === reward.id ? (
+                          <textarea
+                            value={editForm.description}
+                            onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                            className="border rounded px-2 py-1 w-full"
+                            rows={2}
+                          />
+                        ) : (
+                          <span className="text-gray-700">{reward.description || '-'}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm">
@@ -292,12 +309,24 @@ export default function RewardsManagement() {
                 />
                 <p className="text-xs text-gray-500 mt-1">Number of days before coins expire (default: 180)</p>
               </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Descripción del Impulso
+                </label>
+                <textarea
+                  value={createForm.description}
+                  onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  rows={3}
+                  placeholder="Describe qué incluye este impulso..."
+                />
+              </div>
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     setShowCreateModal(false);
-                    setCreateForm({ amount: '', eventTitle: '', defaultExpiryDays: '180' });
+                    setCreateForm({ amount: '', eventTitle: '', defaultExpiryDays: '180', description: '' });
                   }}
                   className="px-4 py-2 text-gray-600 hover:text-gray-800"
                 >
