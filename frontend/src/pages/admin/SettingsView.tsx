@@ -57,10 +57,10 @@ export const SettingsView = () => {
 
   const getSettingLabel = (key: string) => {
     const labels: Record<string, string> = {
-      tokens_per_referral: 'Tokens por Referido',
+      tokens_per_referral: 'Recompensa de Afiliación',
+      referral_bonus_new_user: 'Bienvenida de Afiliados',
       tokens_per_euro: 'Tipo de Cambio (Tokens = 1€)',
       expiring_soon_days: 'Días para "Expiran Pronto"',
-      referral_bonus_new_user: 'Bonificación para Nuevos Usuarios Referidos',
       logo_url: 'URL del Logo Principal',
     };
     return labels[key] || key;
@@ -95,9 +95,58 @@ export const SettingsView = () => {
           <p className="text-gray-600">Ajusta los parámetros principales del sistema de tokens</p>
         </div>
 
+        {/* Referral Settings - Side by Side */}
+        <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4">
+            <h2 className="text-xl font-bold text-white">Configuración de Afiliados</h2>
+            <p className="text-purple-100 text-sm">Gestiona las recompensas del programa de referidos</p>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {settings.filter(s => s.key === 'tokens_per_referral' || s.key === 'referral_bonus_new_user').map((setting) => (
+                <div key={setting.key} className="border rounded-lg p-5 bg-gradient-to-br from-purple-50 to-blue-50">
+                  <label className="block text-lg font-semibold text-gray-900 mb-2">
+                    {getSettingLabel(setting.key)}
+                  </label>
+                  <p className="text-sm text-gray-600 mb-4">{setting.description}</p>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="number"
+                      value={editedValues[setting.key] || ''}
+                      onChange={(e) => handleValueChange(setting.key, e.target.value)}
+                      className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      disabled={saving}
+                    />
+                    <button
+                      onClick={() => handleSave(setting.key)}
+                      disabled={saving || editedValues[setting.key] === setting.value}
+                      className={`px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 ${
+                        editedValues[setting.key] === setting.value
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-purple-600 text-white hover:bg-purple-700'
+                      }`}
+                    >
+                      <Save className="w-4 h-4" />
+                      <span>Guardar</span>
+                    </button>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-3">
+                    Última actualización: {new Date(setting.updated_at).toLocaleString('es-ES')}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Other Settings */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-4">
+            <h2 className="text-xl font-bold text-white">Configuración General</h2>
+            <p className="text-blue-100 text-sm">Ajustes del sistema de tokens</p>
+          </div>
           <div className="p-6 space-y-6">
-            {settings.map((setting) => (
+            {settings.filter(s => s.key !== 'tokens_per_referral' && s.key !== 'referral_bonus_new_user').map((setting) => (
               <div key={setting.key} className="border-b pb-6 last:border-b-0 last:pb-0">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
