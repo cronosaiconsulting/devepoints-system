@@ -467,12 +467,46 @@ export const adminService = {
 
     values.push(rewardId);
 
-    const result = await pool.query(
-      `UPDATE rewards SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`,
-      values
-    );
+    try {
+      const result = await pool.query(
+        `UPDATE rewards SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`,
+        values
+      );
+      return result.rows[0];
+    } catch (error: any) {
+      // If description column doesn't exist, retry without it
+      if (error.code === '42703' && updates.description !== undefined) {
+        const fieldsWithoutDesc = [];
+        const valuesWithoutDesc = [];
+        let paramCountWithoutDesc = 1;
 
-    return result.rows[0];
+        if (updates.amount !== undefined) {
+          fieldsWithoutDesc.push(`amount = $${paramCountWithoutDesc++}`);
+          valuesWithoutDesc.push(updates.amount);
+        }
+        if (updates.event_title !== undefined) {
+          fieldsWithoutDesc.push(`event_title = $${paramCountWithoutDesc++}`);
+          valuesWithoutDesc.push(updates.event_title);
+        }
+        if (updates.default_expiry_days !== undefined) {
+          fieldsWithoutDesc.push(`default_expiry_days = $${paramCountWithoutDesc++}`);
+          valuesWithoutDesc.push(updates.default_expiry_days);
+        }
+        if (updates.active !== undefined) {
+          fieldsWithoutDesc.push(`active = $${paramCountWithoutDesc++}`);
+          valuesWithoutDesc.push(updates.active);
+        }
+
+        valuesWithoutDesc.push(rewardId);
+
+        const result = await pool.query(
+          `UPDATE rewards SET ${fieldsWithoutDesc.join(', ')} WHERE id = $${paramCountWithoutDesc} RETURNING *`,
+          valuesWithoutDesc
+        );
+        return { ...result.rows[0], description: '' };
+      }
+      throw error;
+    }
   },
 
   async deleteReward(rewardId: number) {
