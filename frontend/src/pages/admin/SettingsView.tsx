@@ -23,6 +23,10 @@ export const SettingsView = () => {
   const loadSettings = async () => {
     try {
       const response = await settingsAPI.getAll();
+      console.log('All settings loaded:', response.data.settings);
+      console.log('Referral settings:', response.data.settings.filter((s: Setting) =>
+        s.key === 'tokens_per_referral' || s.key === 'referral_bonus_new_user'
+      ));
       setSettings(response.data.settings);
       // Initialize edited values
       const values: Record<string, string> = {};

@@ -143,6 +143,21 @@ docker-compose exec backend npm run seed
 
 ## Railway Deployment
 
+### ⚠️ IMPORTANT: Railway Builder Configuration
+
+**DO NOT CHANGE the `railway.json` builder from NIXPACKS!**
+
+Both `backend/railway.json` and `frontend/railway.json` are configured to use `"builder": "NIXPACKS"`. This configuration MUST remain as-is.
+
+**Why?**
+- RAILPACK was previously used but Railway changed its behavior and it became unreliable
+- DOCKERFILE builder causes build context issues in monorepo structure
+- NIXPACKS is the only builder that works reliably with this project structure
+
+**Root Directory Configuration:**
+- Backend service: Set root directory to `backend/` in Railway dashboard
+- Frontend service: Set root directory to `frontend/` in Railway dashboard
+
 ### Option 1: Separate Services (Recommended)
 
 1. **Create PostgreSQL Database:**
@@ -152,16 +167,20 @@ docker-compose exec backend npm run seed
 
 2. **Deploy Backend:**
    - New → GitHub Repo → Select backend folder
+   - **Set root directory:** `backend`
+   - Verify `railway.json` has `"builder": "NIXPACKS"` (DO NOT change)
    - Add environment variables:
      ```
      DATABASE_URL=<your-railway-postgres-url>
      JWT_SECRET=<generate-random-secret>
      NODE_ENV=production
      ```
-   - Deploy will auto-run migrations
+   - Deploy will auto-run migrations via `npm run migrate:updates && node dist/index.js`
 
 3. **Deploy Frontend:**
    - New → GitHub Repo → Select frontend folder
+   - **Set root directory:** `frontend`
+   - Verify `railway.json` has `"builder": "NIXPACKS"` (DO NOT change)
    - Add environment variable:
      ```
      VITE_API_URL=<your-backend-url>/api
