@@ -28,16 +28,37 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
       const iframeDoc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
       if (iframeDoc) {
         iframeDoc.open();
-        iframeDoc.write(termsHtml);
+
+        // Wrap content to ensure proper scrolling behavior
+        const wrappedHtml = termsHtml.includes('<html')
+          ? termsHtml.replace('<html', '<html style="height: 100%; overflow-y: auto;"')
+          : `<!DOCTYPE html>
+             <html style="height: 100%; overflow-y: auto;">
+             <head><meta charset="utf-8"></head>
+             <body style="margin: 20px; height: auto; min-height: 100%;">
+             ${termsHtml}
+             </body>
+             </html>`;
+
+        iframeDoc.write(wrappedHtml);
         iframeDoc.close();
 
         // Check if content is short enough that scrolling isn't needed
         setTimeout(() => {
-          const element = iframeDoc.documentElement || iframeDoc.body;
-          if (element.scrollHeight <= element.clientHeight) {
+          const html = iframeDoc.documentElement;
+          const body = iframeDoc.body;
+
+          console.log('Iframe heights after load:', {
+            htmlScrollHeight: html.scrollHeight,
+            htmlClientHeight: html.clientHeight,
+            bodyScrollHeight: body.scrollHeight,
+            bodyClientHeight: body.clientHeight
+          });
+
+          if (html.scrollHeight <= html.clientHeight) {
             setHasScrolledToBottom(true);
           }
-        }, 100);
+        }, 200);
       }
     }
   }, [termsHtml, isOpen]);
