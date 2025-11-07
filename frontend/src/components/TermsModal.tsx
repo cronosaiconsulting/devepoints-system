@@ -28,15 +28,46 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
         iframeDoc.open();
         iframeDoc.write(termsHtml);
         iframeDoc.close();
+
+        // Check if content is short enough that scrolling isn't needed
+        setTimeout(() => {
+          const element = iframeDoc.documentElement || iframeDoc.body;
+          if (element.scrollHeight <= element.clientHeight) {
+            setHasScrolledToBottom(true);
+          }
+        }, 100);
       }
     }
   }, [termsHtml, isOpen]);
 
+  useEffect(() => {
+    // Check if div content is short enough that scrolling isn't needed
+    if (contentRef.current && !isFullHtml) {
+      const checkScroll = () => {
+        if (contentRef.current) {
+          const element = contentRef.current;
+          if (element.scrollHeight <= element.clientHeight) {
+            setHasScrolledToBottom(true);
+          }
+        }
+      };
+
+      // Check after content loads
+      setTimeout(checkScroll, 100);
+    }
+  }, [termsHtml, isOpen, isFullHtml]);
+
   const handleScroll = () => {
     if (contentRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
-      // Check if user has scrolled to within 10px of the bottom
-      if (scrollTop + clientHeight >= scrollHeight - 10) {
+      const element = contentRef.current;
+      const scrollTop = element.scrollTop;
+      const scrollHeight = element.scrollHeight;
+      const clientHeight = element.clientHeight;
+
+      // Check if scrolled to bottom (within 5px tolerance)
+      const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 5;
+
+      if (isAtBottom) {
         setHasScrolledToBottom(true);
       }
     }
@@ -46,8 +77,15 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
     if (iframeRef.current) {
       const iframeDoc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
       if (iframeDoc) {
-        const { scrollTop, scrollHeight, clientHeight } = iframeDoc.documentElement;
-        if (scrollTop + clientHeight >= scrollHeight - 10) {
+        const element = iframeDoc.documentElement || iframeDoc.body;
+        const scrollTop = element.scrollTop;
+        const scrollHeight = element.scrollHeight;
+        const clientHeight = element.clientHeight;
+
+        // Check if scrolled to bottom (within 5px tolerance)
+        const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 5;
+
+        if (isAtBottom) {
           setHasScrolledToBottom(true);
         }
       }
@@ -64,8 +102,8 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">Términos y Condiciones</h2>
@@ -98,7 +136,8 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
           <div
             ref={contentRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto p-6 prose prose-sm max-w-none"
+            className="flex-1 overflow-y-auto p-6 prose max-w-none"
+            style={{ fontSize: '10pt' }}
             dangerouslySetInnerHTML={{ __html: termsHtml }}
           />
         )}
