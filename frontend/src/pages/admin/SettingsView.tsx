@@ -66,6 +66,7 @@ export const SettingsView = () => {
       tokens_per_euro: 'Tipo de Cambio (Tokens = 1€)',
       expiring_soon_days: 'Días para "Expiran Pronto"',
       logo_url: 'URL del Logo Principal',
+      terms_and_conditions: 'Términos y Condiciones',
     };
     return labels[key] || key;
   };
@@ -150,7 +151,7 @@ export const SettingsView = () => {
             <p className="text-blue-100 text-sm">Ajustes del sistema de tokens</p>
           </div>
           <div className="p-6 space-y-6">
-            {settings.filter(s => s.key !== 'tokens_per_referral' && s.key !== 'referral_bonus_new_user').map((setting) => (
+            {settings.filter(s => s.key !== 'tokens_per_referral' && s.key !== 'referral_bonus_new_user' && s.key !== 'terms_and_conditions').map((setting) => (
               <div key={setting.key} className="border-b pb-6 last:border-b-0 last:pb-0">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
@@ -192,6 +193,48 @@ export const SettingsView = () => {
                 </div>
                 <div className="text-xs text-gray-500 mt-2">
                   Última actualización: {new Date(setting.updated_at).toLocaleString('es-ES')}
+                </div>
+              </div>
+            ))}
+
+            {/* Terms and Conditions Section */}
+            {settings.filter(s => s.key === 'terms_and_conditions').map((setting) => (
+              <div key={setting.key} className="border-t-2 border-gray-200 pt-6 mt-6">
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg mb-4">
+                  <label className="block text-lg font-semibold text-gray-900 mb-1">
+                    {getSettingLabel(setting.key)}
+                  </label>
+                  <p className="text-sm text-gray-600">{setting.description}</p>
+                </div>
+                <div className="mb-4">
+                  <textarea
+                    value={editedValues[setting.key] || ''}
+                    onChange={(e) => handleValueChange(setting.key, e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                    rows={12}
+                    placeholder="<h2>Términos y Condiciones</h2><p>Contenido HTML...</p>"
+                    disabled={saving}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    💡 Usa HTML para dar formato al contenido (h2, p, ul, li, strong, etc.)
+                  </p>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-gray-500">
+                    Última actualización: {new Date(setting.updated_at).toLocaleString('es-ES')}
+                  </div>
+                  <button
+                    onClick={() => handleSave(setting.key)}
+                    disabled={saving || editedValues[setting.key] === setting.value}
+                    className={`px-6 py-3 rounded-lg font-semibold flex items-center space-x-2 ${
+                      editedValues[setting.key] === setting.value
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-green-600 text-white hover:bg-green-700'
+                    }`}
+                  >
+                    <Save className="w-5 h-5" />
+                    <span>Guardar Términos y Condiciones</span>
+                  </button>
                 </div>
               </div>
             ))}

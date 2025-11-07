@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { authAPI } from '../api/client';
+import { authAPI, settingsAPI } from '../api/client';
 import { useAuth } from '../hooks/useAuth';
+import { TermsModal } from '../components/TermsModal';
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -18,6 +19,25 @@ export const Login = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [termsHtml, setTermsHtml] = useState('');
+
+  // Load terms and conditions
+  useEffect(() => {
+    const loadTerms = async () => {
+      try {
+        const response = await settingsAPI.getAll();
+        const termsSetting = response.data.settings.find((s: any) => s.key === 'terms_and_conditions');
+        if (termsSetting) {
+          setTermsHtml(termsSetting.value);
+        }
+      } catch (error) {
+        console.error('Error loading terms:', error);
+      }
+    };
+    loadTerms();
+  }, []);
 
   // Update referral code if URL changes
   useEffect(() => {
@@ -30,6 +50,13 @@ export const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Check terms acceptance for registration
+    if (!isLogin && !termsAccepted) {
+      setError('Debes aceptar los Términos y Condiciones para registrarte');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -53,6 +80,10 @@ export const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTermsAccept = () => {
+    setTermsAccepted(true);
   };
 
   return (
@@ -131,6 +162,28 @@ export const Login = () => {
             </div>
           )}
 
+          {!isLogin && (
+            <div className="flex items-start space-x-2">
+              <input
+                type="checkbox"
+                id="termsCheckbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor="termsCheckbox" className="text-sm text-gray-700">
+                Acepto los{' '}
+                <button
+                  type="button"
+                  onClick={() => setShowTermsModal(true)}
+                  className="text-blue-600 hover:underline font-semibold"
+                >
+                  Términos y Condiciones
+                </button>
+              </label>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
@@ -150,6 +203,13 @@ export const Login = () => {
           </button>
         </p>
       </div>
+
+      <TermsModal
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+        onAccept={handleTermsAccept}
+        termsHtml={termsHtml}
+      />
     </div>
   );
 };

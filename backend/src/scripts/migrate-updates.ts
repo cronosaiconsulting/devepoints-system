@@ -132,6 +132,14 @@ async function migrateUpdates() {
     `);
     console.log('✓ Ensured tokens_per_referral setting exists');
 
+    // 16. Add terms_and_conditions setting
+    await pool.query(`
+      INSERT INTO settings (key, value, description)
+      VALUES ('terms_and_conditions', '<h2>Términos y Condiciones</h2><p>Aquí van los términos y condiciones de uso del sistema.</p>', 'Términos y condiciones del sistema (HTML)')
+      ON CONFLICT (key) DO NOTHING;
+    `);
+    console.log('✓ Added terms_and_conditions setting');
+
     console.log('✅ Schema updates completed successfully!');
     process.exit(0);
   } catch (error) {

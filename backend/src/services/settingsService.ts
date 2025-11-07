@@ -17,7 +17,8 @@ export const settingsService = {
           { key: 'referral_bonus_new_user', value: '25', description: 'Tokens de bonificación para nuevos usuarios referidos', updated_at: new Date() },
           { key: 'tokens_per_euro', value: '1', description: 'Tipo de cambio: X tokens = 1€', updated_at: new Date() },
           { key: 'expiring_soon_days', value: '30', description: 'Días para considerar que los tokens expiran pronto', updated_at: new Date() },
-          { key: 'logo_url', value: '', description: 'URL del logo principal (usar IMGUR)', updated_at: new Date() }
+          { key: 'logo_url', value: '', description: 'URL del logo principal (usar IMGUR)', updated_at: new Date() },
+          { key: 'terms_and_conditions', value: '<h2>Términos y Condiciones</h2><p>Aquí van los términos y condiciones de uso del sistema.</p>', description: 'Términos y condiciones del sistema (HTML)', updated_at: new Date() }
         ];
       }
       throw error;
@@ -42,7 +43,8 @@ export const settingsService = {
           'referral_bonus_new_user': '25',
           'tokens_per_euro': '1',
           'expiring_soon_days': '30',
-          'logo_url': ''
+          'logo_url': '',
+          'terms_and_conditions': '<h2>Términos y Condiciones</h2><p>Aquí van los términos y condiciones de uso del sistema.</p>'
         };
         return defaults[key] || null;
       }
