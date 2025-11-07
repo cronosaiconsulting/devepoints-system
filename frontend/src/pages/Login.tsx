@@ -27,10 +27,9 @@ export const Login = () => {
   useEffect(() => {
     const loadTerms = async () => {
       try {
-        const response = await settingsAPI.getAll();
-        const termsSetting = response.data.settings.find((s: any) => s.key === 'terms_and_conditions');
-        if (termsSetting) {
-          setTermsHtml(termsSetting.value);
+        const response = await settingsAPI.getPublic('terms_and_conditions');
+        if (response.data.value) {
+          setTermsHtml(response.data.value);
         }
       } catch (error) {
         console.error('Error loading terms:', error);

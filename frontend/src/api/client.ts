@@ -100,5 +100,6 @@ export const adminAPI = {
 
 export const settingsAPI = {
   getAll: () => api.get('/settings'),
-  update: (key: string, value: string) => api.put(`/settings/${key}`, { value })
+  update: (key: string, value: string) => api.put(`/settings/${key}`, { value }),
+  getPublic: (key: string) => api.get(`/settings/public/${key}`)
 };

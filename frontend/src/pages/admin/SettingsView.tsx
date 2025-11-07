@@ -65,6 +65,7 @@ export const SettingsView = () => {
       referral_bonus_new_user: 'Bienvenida de Afiliados',
       tokens_per_euro: 'Tipo de Cambio (Tokens = 1€)',
       expiring_soon_days: 'Días para "Expiran Pronto"',
+      default_token_expiry_days: 'Días de Expiración de Tokens',
       logo_url: 'URL del Logo Principal',
       terms_and_conditions: 'Términos y Condiciones',
     };

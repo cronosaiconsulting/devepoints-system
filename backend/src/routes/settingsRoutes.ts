@@ -5,6 +5,24 @@ import { z } from 'zod';
 
 const router = Router();
 
+// Public endpoint for getting specific public settings (like terms and conditions)
+router.get('/public/:key', async (req, res) => {
+  try {
+    const { key } = req.params;
+    // Only allow specific public settings
+    const allowedPublicSettings = ['terms_and_conditions'];
+
+    if (!allowedPublicSettings.includes(key)) {
+      return res.status(403).json({ error: 'This setting is not publicly accessible' });
+    }
+
+    const value = await settingsService.getSetting(key);
+    res.json({ key, value });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.use(authenticate);
 router.use(requireAdmin);
 

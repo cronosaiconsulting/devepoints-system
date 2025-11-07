@@ -39,12 +39,14 @@ export const userService = {
       // Fetch referral settings from database
       const referralBonusNewUser = await settingsService.getSetting('referral_bonus_new_user');
       const tokensPerReferral = await settingsService.getSetting('tokens_per_referral');
+      const defaultExpiryDays = await settingsService.getSetting('default_token_expiry_days');
 
       const newUserBonus = parseInt(referralBonusNewUser || '25');
       const referrerReward = parseInt(tokensPerReferral || '50');
+      const expiryDays = parseInt(defaultExpiryDays || '365');
 
       const expiryDate = new Date();
-      expiryDate.setDate(expiryDate.getDate() + parseInt(process.env.DEFAULT_COIN_EXPIRY_DAYS || '180'));
+      expiryDate.setDate(expiryDate.getDate() + expiryDays);
 
       // Award coins to new user
       await pool.query(

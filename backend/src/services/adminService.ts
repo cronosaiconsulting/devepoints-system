@@ -1,5 +1,6 @@
 import { pool } from '../config/database';
 import bcrypt from 'bcryptjs';
+import { settingsService } from './settingsService';
 
 function generateReferralCode(): string {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -387,12 +388,19 @@ export const adminService = {
 
   // Rewards CRUD
   async createReward(amount: number, eventTitle: string, defaultExpiryDays?: number, description?: string) {
+    // Get default expiry days from settings if not provided
+    let expiryDays = defaultExpiryDays;
+    if (!expiryDays) {
+      const defaultSetting = await settingsService.getSetting('default_token_expiry_days');
+      expiryDays = parseInt(defaultSetting || '365');
+    }
+
     try {
       const result = await pool.query(
         `INSERT INTO rewards (amount, event_title, default_expiry_days, description)
          VALUES ($1, $2, $3, $4)
          RETURNING *`,
-        [amount, eventTitle, defaultExpiryDays || 180, description || '']
+        [amount, eventTitle, expiryDays, description || '']
       );
       return result.rows[0];
     } catch (error: any) {
@@ -402,7 +410,7 @@ export const adminService = {
           `INSERT INTO rewards (amount, event_title, default_expiry_days)
            VALUES ($1, $2, $3)
            RETURNING *`,
-          [amount, eventTitle, defaultExpiryDays || 180]
+          [amount, eventTitle, expiryDays]
         );
         return { ...result.rows[0], description: '' };
       }

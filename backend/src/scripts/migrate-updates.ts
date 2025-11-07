@@ -140,6 +140,14 @@ async function migrateUpdates() {
     `);
     console.log('✓ Added terms_and_conditions setting');
 
+    // 17. Add default_token_expiry_days setting
+    await pool.query(`
+      INSERT INTO settings (key, value, description)
+      VALUES ('default_token_expiry_days', '365', 'Días hasta que los tokens expiren por defecto')
+      ON CONFLICT (key) DO NOTHING;
+    `);
+    console.log('✓ Added default_token_expiry_days setting');
+
     console.log('✅ Schema updates completed successfully!');
     process.exit(0);
   } catch (error) {

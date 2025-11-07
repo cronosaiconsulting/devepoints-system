@@ -11,6 +11,7 @@ interface TermsModalProps {
 export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalProps) => {
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     // Reset scroll state when modal opens
@@ -18,6 +19,18 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
       setHasScrolledToBottom(false);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    // Load HTML content into iframe if it contains head/body/style tags
+    if (iframeRef.current && termsHtml && (termsHtml.includes('<head>') || termsHtml.includes('<style>') || termsHtml.includes('<body>'))) {
+      const iframeDoc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
+      if (iframeDoc) {
+        iframeDoc.open();
+        iframeDoc.write(termsHtml);
+        iframeDoc.close();
+      }
+    }
+  }, [termsHtml, isOpen]);
 
   const handleScroll = () => {
     if (contentRef.current) {
@@ -28,6 +41,20 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
       }
     }
   };
+
+  const handleIframeScroll = () => {
+    if (iframeRef.current) {
+      const iframeDoc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
+      if (iframeDoc) {
+        const { scrollTop, scrollHeight, clientHeight } = iframeDoc.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 10) {
+          setHasScrolledToBottom(true);
+        }
+      }
+    }
+  };
+
+  const isFullHtml = termsHtml && (termsHtml.includes('<head>') || termsHtml.includes('<style>') || termsHtml.includes('<body>'));
 
   const handleAccept = () => {
     onAccept();
@@ -52,12 +79,29 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
         </div>
 
         {/* Content - Scrollable */}
-        <div
-          ref={contentRef}
-          onScroll={handleScroll}
-          className="flex-1 overflow-y-auto p-6 prose prose-sm max-w-none"
-          dangerouslySetInnerHTML={{ __html: termsHtml }}
-        />
+        {isFullHtml ? (
+          <iframe
+            ref={iframeRef}
+            onLoad={() => {
+              // Attach scroll listener to iframe content
+              if (iframeRef.current) {
+                const iframeDoc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
+                if (iframeDoc) {
+                  iframeDoc.addEventListener('scroll', handleIframeScroll);
+                }
+              }
+            }}
+            className="flex-1 w-full border-0"
+            title="Términos y Condiciones"
+          />
+        ) : (
+          <div
+            ref={contentRef}
+            onScroll={handleScroll}
+            className="flex-1 overflow-y-auto p-6 prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: termsHtml }}
+          />
+        )}
 
         {/* Footer */}
         <div className="p-6 border-t border-gray-200 bg-gray-50">
