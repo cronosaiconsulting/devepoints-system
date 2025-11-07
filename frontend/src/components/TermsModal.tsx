@@ -94,6 +94,9 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
 
   const isFullHtml = termsHtml && (termsHtml.includes('<head>') || termsHtml.includes('<style>') || termsHtml.includes('<body>'));
 
+  // Add custom styles for h1 sizing
+  const styledHtml = isFullHtml ? termsHtml : `<style>h1 { font-size: 24pt !important; }</style>${termsHtml}`;
+
   const handleAccept = () => {
     onAccept();
     onClose();
@@ -137,8 +140,8 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
             ref={contentRef}
             onScroll={handleScroll}
             className="flex-1 overflow-y-auto p-6 prose max-w-none"
-            style={{ fontSize: '10pt' }}
-            dangerouslySetInnerHTML={{ __html: termsHtml }}
+            style={{ fontSize: '12pt' }}
+            dangerouslySetInnerHTML={{ __html: styledHtml }}
           />
         )}
 
