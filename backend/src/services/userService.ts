@@ -2,6 +2,7 @@ import { pool } from '../config/database';
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { User } from '../types';
+import { settingsService } from './settingsService';
 
 function generateReferralCode(): string {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -35,6 +36,13 @@ export const userService = {
 
     // Award coins to new user (referred bonus)
     if (referrerId) {
+      // Fetch referral settings from database
+      const referralBonusNewUser = await settingsService.getSetting('referral_bonus_new_user');
+      const tokensPerReferral = await settingsService.getSetting('tokens_per_referral');
+
+      const newUserBonus = parseInt(referralBonusNewUser || '25');
+      const referrerReward = parseInt(tokensPerReferral || '50');
+
       const expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + parseInt(process.env.DEFAULT_COIN_EXPIRY_DAYS || '180'));
 
@@ -42,21 +50,21 @@ export const userService = {
       await pool.query(
         `INSERT INTO transactions (user_id, amount, type, description, expires_at)
          VALUES ($1, $2, $3, $4, $5)`,
-        [user.id, parseInt(process.env.REFERRED_USER_BONUS_COINS || '50'), 'referral', 'Signup bonus for using referral code', expiryDate]
+        [user.id, newUserBonus, 'referral', 'Signup bonus for using referral code', expiryDate]
       );
 
       // Award coins to referrer
       await pool.query(
         `INSERT INTO transactions (user_id, amount, type, description, expires_at)
          VALUES ($1, $2, $3, $4, $5)`,
-        [referrerId, parseInt(process.env.REFERRAL_REWARD_COINS || '100'), 'referral', `Referral bonus for inviting ${fullName}`, expiryDate]
+        [referrerId, referrerReward, 'referral', `Referral bonus for inviting ${fullName}`, expiryDate]
       );
 
       // Log referral
       await pool.query(
         `INSERT INTO referrals (referrer_id, referred_id, reward_amount)
          VALUES ($1, $2, $3)`,
-        [referrerId, user.id, parseInt(process.env.REFERRAL_REWARD_COINS || '100')]
+        [referrerId, user.id, referrerReward]
       );
     }
 
