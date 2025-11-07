@@ -108,6 +108,30 @@ async function migrateUpdates() {
     `);
     console.log('✓ Updated existing rewards with empty description');
 
+    // 13. Rename referral_tokens to tokens_per_referral
+    await pool.query(`
+      UPDATE settings
+      SET key = 'tokens_per_referral'
+      WHERE key = 'referral_tokens';
+    `);
+    console.log('✓ Renamed referral_tokens to tokens_per_referral');
+
+    // 14. Ensure referral_bonus_new_user setting exists
+    await pool.query(`
+      INSERT INTO settings (key, value, description)
+      VALUES ('referral_bonus_new_user', '25', 'Tokens de bonificación para nuevos usuarios referidos')
+      ON CONFLICT (key) DO NOTHING;
+    `);
+    console.log('✓ Ensured referral_bonus_new_user setting exists');
+
+    // 15. Ensure tokens_per_referral setting exists (in case it was never created)
+    await pool.query(`
+      INSERT INTO settings (key, value, description)
+      VALUES ('tokens_per_referral', '50', 'Cantidad de tokens que gana el referidor por cada referido exitoso')
+      ON CONFLICT (key) DO NOTHING;
+    `);
+    console.log('✓ Ensured tokens_per_referral setting exists');
+
     console.log('✅ Schema updates completed successfully!');
     process.exit(0);
   } catch (error) {
