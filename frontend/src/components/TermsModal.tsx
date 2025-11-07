@@ -62,12 +62,14 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
   const handleScroll = () => {
     if (contentRef.current) {
       const element = contentRef.current;
-      const scrollTop = element.scrollTop;
+      const scrollTop = Math.ceil(element.scrollTop);
       const scrollHeight = element.scrollHeight;
       const clientHeight = element.clientHeight;
 
-      // Check if scrolled to bottom (within 5px tolerance)
-      const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 5;
+      // Check if scrolled to bottom (within 2px tolerance to account for fractional pixels)
+      const isAtBottom = (scrollTop + clientHeight) >= (scrollHeight - 2);
+
+      console.log('Div scroll:', { scrollTop, scrollHeight, clientHeight, calc: scrollTop + clientHeight, isAtBottom });
 
       if (isAtBottom) {
         setHasScrolledToBottom(true);
@@ -80,12 +82,14 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
       const iframeDoc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
       if (iframeDoc) {
         const element = iframeDoc.documentElement || iframeDoc.body;
-        const scrollTop = element.scrollTop;
+        const scrollTop = Math.ceil(element.scrollTop);
         const scrollHeight = element.scrollHeight;
         const clientHeight = element.clientHeight;
 
-        // Check if scrolled to bottom (within 5px tolerance)
-        const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 5;
+        // Check if scrolled to bottom (within 2px tolerance)
+        const isAtBottom = (scrollTop + clientHeight) >= (scrollHeight - 2);
+
+        console.log('Iframe scroll:', { scrollTop, scrollHeight, clientHeight, calc: scrollTop + clientHeight, isAtBottom });
 
         if (isAtBottom) {
           setHasScrolledToBottom(true);
@@ -94,8 +98,14 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
     }
   };
 
-  // Add custom styles for h1 sizing
-  const styledHtml = isFullHtml ? termsHtml : `<style>h1 { font-size: 24pt !important; }</style>${termsHtml}`;
+  // Add custom styles for proper font sizing
+  const styledHtml = isFullHtml ? termsHtml : `<style>
+    * { font-size: 12pt !important; line-height: 1.6 !important; }
+    h1 { font-size: 24pt !important; font-weight: bold !important; margin-top: 0.5em !important; margin-bottom: 0.5em !important; }
+    h2 { font-size: 18pt !important; font-weight: bold !important; }
+    h3 { font-size: 14pt !important; font-weight: bold !important; }
+    p { margin-top: 0.5em !important; margin-bottom: 0.5em !important; }
+  </style>${termsHtml}`;
 
   const handleAccept = () => {
     onAccept();
@@ -106,7 +116,7 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[85vh] flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-[900px] h-[600px] flex flex-col" style={{ minWidth: '900px', minHeight: '600px', maxWidth: '90vw', maxHeight: '90vh' }}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">Términos y Condiciones</h2>
@@ -139,8 +149,7 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
           <div
             ref={contentRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto p-6 prose max-w-none"
-            style={{ fontSize: '12pt' }}
+            className="flex-1 overflow-y-auto p-6"
             dangerouslySetInnerHTML={{ __html: styledHtml }}
           />
         )}
