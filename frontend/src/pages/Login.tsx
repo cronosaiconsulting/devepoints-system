@@ -167,14 +167,43 @@ export const Login = () => {
                 type="checkbox"
                 id="termsCheckbox"
                 checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
-                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                onChange={(e) => {
+                  // Only allow checking if terms haven't been accepted yet - show modal
+                  if (!termsAccepted) {
+                    e.preventDefault();
+                    setShowTermsModal(true);
+                  } else {
+                    // Allow unchecking
+                    setTermsAccepted(false);
+                  }
+                }}
+                onClick={(e) => {
+                  // Show modal when clicking on unchecked checkbox
+                  if (!termsAccepted) {
+                    e.preventDefault();
+                    setShowTermsModal(true);
+                  }
+                }}
+                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
               />
-              <label htmlFor="termsCheckbox" className="text-sm text-gray-700">
+              <label
+                htmlFor="termsCheckbox"
+                className="text-sm text-gray-700 cursor-pointer"
+                onClick={(e) => {
+                  // Show modal when clicking label if not accepted
+                  if (!termsAccepted) {
+                    e.preventDefault();
+                    setShowTermsModal(true);
+                  }
+                }}
+              >
                 Acepto los{' '}
                 <button
                   type="button"
-                  onClick={() => setShowTermsModal(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowTermsModal(true);
+                  }}
                   className="text-blue-600 hover:underline font-semibold"
                 >
                   Términos y Condiciones
