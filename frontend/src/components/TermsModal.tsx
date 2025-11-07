@@ -13,6 +13,8 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
   const contentRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  const isFullHtml = termsHtml && (termsHtml.includes('<head>') || termsHtml.includes('<style>') || termsHtml.includes('<body>'));
+
   useEffect(() => {
     // Reset scroll state when modal opens
     if (isOpen) {
@@ -91,8 +93,6 @@ export const TermsModal = ({ isOpen, onClose, onAccept, termsHtml }: TermsModalP
       }
     }
   };
-
-  const isFullHtml = termsHtml && (termsHtml.includes('<head>') || termsHtml.includes('<style>') || termsHtml.includes('<body>'));
 
   // Add custom styles for h1 sizing
   const styledHtml = isFullHtml ? termsHtml : `<style>h1 { font-size: 24pt !important; }</style>${termsHtml}`;
