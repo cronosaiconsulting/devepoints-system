@@ -523,5 +523,162 @@ export const adminService = {
       [rewardId]
     );
     return result.rows[0];
+  },
+
+  // Impulso Approvals CRUD
+  async createImpulsoApproval(userId: number, impulsoId: number, nombreCompleto: string, fechaLogro: string, mensaje: string) {
+    const result = await pool.query(
+      `INSERT INTO aprobaciones_impulsos (user_id, impulso_id, nombre_completo, fecha_logro, mensaje, status)
+       VALUES ($1, $2, $3, $4, $5, 'pendiente')
+       RETURNING *`,
+      [userId, impulsoId, nombreCompleto, fechaLogro, mensaje]
+    );
+    return result.rows[0];
+  },
+
+  async getAllApprovals(limit: number = 50, offset: number = 0, filters?: {
+    userName?: string;
+    status?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }) {
+    let query = `SELECT a.*, u.email, u.full_name as user_full_name, r.event_title, r.amount
+       FROM aprobaciones_impulsos a
+       JOIN users u ON a.user_id = u.id
+       JOIN rewards r ON a.impulso_id = r.id
+       WHERE 1=1`;
+
+    const params: any[] = [];
+    let paramCount = 1;
+
+    if (filters?.userName) {
+      query += ` AND (u.full_name ILIKE $${paramCount} OR a.nombre_completo ILIKE $${paramCount})`;
+      params.push(`%${filters.userName}%`);
+      paramCount++;
+    }
+    if (filters?.status) {
+      query += ` AND a.status = $${paramCount}`;
+      params.push(filters.status);
+      paramCount++;
+    }
+    if (filters?.dateFrom) {
+      query += ` AND a.fecha_logro >= $${paramCount}`;
+      params.push(filters.dateFrom);
+      paramCount++;
+    }
+    if (filters?.dateTo) {
+      query += ` AND a.fecha_logro <= $${paramCount}`;
+      params.push(filters.dateTo);
+      paramCount++;
+    }
+
+    query += ` ORDER BY a.created_at DESC LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
+    params.push(limit, offset);
+
+    const result = await pool.query(query, params);
+
+    // Get total count for pagination
+    let countQuery = `SELECT COUNT(*) as total
+       FROM aprobaciones_impulsos a
+       JOIN users u ON a.user_id = u.id
+       JOIN rewards r ON a.impulso_id = r.id
+       WHERE 1=1`;
+
+    const countParams: any[] = [];
+    let countParamCount = 1;
+
+    if (filters?.userName) {
+      countQuery += ` AND (u.full_name ILIKE $${countParamCount} OR a.nombre_completo ILIKE $${countParamCount})`;
+      countParams.push(`%${filters.userName}%`);
+      countParamCount++;
+    }
+    if (filters?.status) {
+      countQuery += ` AND a.status = $${countParamCount}`;
+      countParams.push(filters.status);
+      countParamCount++;
+    }
+    if (filters?.dateFrom) {
+      countQuery += ` AND a.fecha_logro >= $${countParamCount}`;
+      countParams.push(filters.dateFrom);
+      countParamCount++;
+    }
+    if (filters?.dateTo) {
+      countQuery += ` AND a.fecha_logro <= $${countParamCount}`;
+      countParams.push(filters.dateTo);
+      countParamCount++;
+    }
+
+    const countResult = await pool.query(countQuery, countParams);
+
+    return {
+      approvals: result.rows,
+      total: parseInt(countResult.rows[0].total)
+    };
+  },
+
+  async getApprovalDetails(approvalId: number) {
+    const result = await pool.query(
+      `SELECT a.*, u.email, u.full_name as user_full_name, r.event_title, r.amount, r.description as impulso_description,
+              reviewer.full_name as reviewer_name
+       FROM aprobaciones_impulsos a
+       JOIN users u ON a.user_id = u.id
+       JOIN rewards r ON a.impulso_id = r.id
+       LEFT JOIN users reviewer ON a.reviewed_by = reviewer.id
+       WHERE a.id = $1`,
+      [approvalId]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error('Approval not found');
+    }
+
+    return result.rows[0];
+  },
+
+  async approveImpulso(approvalId: number, reviewerId: number) {
+    // Get approval details
+    const approval = await this.getApprovalDetails(approvalId);
+
+    if (approval.status !== 'pendiente') {
+      throw new Error('This approval has already been processed');
+    }
+
+    // Update approval status
+    await pool.query(
+      `UPDATE aprobaciones_impulsos
+       SET status = 'aprobada', reviewed_at = NOW(), reviewed_by = $1, updated_at = NOW()
+       WHERE id = $2`,
+      [reviewerId, approvalId]
+    );
+
+    // Award the coins to the user
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 180); // Default 180 days expiry
+
+    await pool.query(
+      `INSERT INTO transactions (user_id, amount, type, description, expires_at)
+       VALUES ($1, $2, 'admin_award', $3, $4)`,
+      [approval.user_id, approval.amount, `Impulso aprobado: ${approval.event_title}`, expiresAt]
+    );
+
+    return await this.getApprovalDetails(approvalId);
+  },
+
+  async rejectImpulso(approvalId: number, reviewerId: number, motivoRechazo: string) {
+    const approval = await this.getApprovalDetails(approvalId);
+
+    if (approval.status !== 'pendiente') {
+      throw new Error('This approval has already been processed');
+    }
+
+    const result = await pool.query(
+      `UPDATE aprobaciones_impulsos
+       SET status = 'rechazada', motivo_rechazo = $1, reviewed_at = NOW(), reviewed_by = $2, updated_at = NOW()
+       WHERE id = $3
+       RETURNING *`,
+      [motivoRechazo, reviewerId, approvalId]
+    );
+
+    return await this.getApprovalDetails(approvalId);
   }
 };

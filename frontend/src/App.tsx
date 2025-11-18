@@ -8,6 +8,7 @@ import Impulsos from './pages/Impulsos';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { UsersManagement } from './pages/admin/UsersManagement';
 import RewardsManagement from './pages/admin/RewardsManagement';
+import AprobacionesView from './pages/admin/AprobacionesView';
 import { StoreManagement } from './pages/admin/StoreManagement';
 import { TransactionsView } from './pages/admin/TransactionsView';
 import { OrdersView } from './pages/admin/OrdersView';
@@ -85,6 +86,14 @@ function AppRoutes() {
         element={
           <AdminRoute>
             <RewardsManagement />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/aprobaciones"
+        element={
+          <AdminRoute>
+            <AprobacionesView />
           </AdminRoute>
         }
       />

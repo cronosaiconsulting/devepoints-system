@@ -95,7 +95,36 @@ export const adminAPI = {
 
   // Transactions
   refundTransaction: (transactionId: number, reason?: string) =>
-    api.post(`/admin/transactions/${transactionId}/refund`, { reason })
+    api.post(`/admin/transactions/${transactionId}/refund`, { reason }),
+
+  // Impulso Approvals
+  createApproval: (impulsoId: number, nombreCompleto: string, fechaLogro: string, mensaje: string) =>
+    api.post('/admin/approvals', { impulsoId, nombreCompleto, fechaLogro, mensaje }),
+
+  getApprovals: (limit: number = 50, offset: number = 0, filters?: {
+    userName?: string;
+    status?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }) => {
+    const params = new URLSearchParams();
+    params.append('limit', limit.toString());
+    params.append('offset', offset.toString());
+    if (filters?.userName) params.append('user_name', filters.userName);
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.dateFrom) params.append('date_from', filters.dateFrom);
+    if (filters?.dateTo) params.append('date_to', filters.dateTo);
+    return api.get(`/admin/approvals?${params.toString()}`);
+  },
+
+  getApprovalDetails: (approvalId: number) =>
+    api.get(`/admin/approvals/${approvalId}`),
+
+  approveImpulso: (approvalId: number) =>
+    api.post(`/admin/approvals/${approvalId}/approve`),
+
+  rejectImpulso: (approvalId: number, motivoRechazo: string) =>
+    api.post(`/admin/approvals/${approvalId}/reject`, { motivoRechazo })
 };
 
 export const settingsAPI = {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { adminAPI } from '../api/client';
 import { Navbar } from '../components/Navbar';
-import { Zap, Calendar, Coins, ChevronRight } from 'lucide-react';
+import { Zap, Calendar, Coins, ChevronRight, AlertCircle } from 'lucide-react';
 
 interface Impulso {
   id: number;
@@ -17,6 +17,13 @@ export default function Impulsos() {
   const [impulsos, setImpulsos] = useState<Impulso[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImpulso, setSelectedImpulso] = useState<Impulso | null>(null);
+  const [showApprovalForm, setShowApprovalForm] = useState(false);
+  const [approvalImpulso, setApprovalImpulso] = useState<Impulso | null>(null);
+  const [approvalForm, setApprovalForm] = useState({
+    nombreCompleto: '',
+    fechaLogro: '',
+    mensaje: ''
+  });
 
   useEffect(() => {
     loadImpulsos();
@@ -30,6 +37,26 @@ export default function Impulsos() {
       console.error('Failed to load impulsos:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApprovalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!approvalImpulso) return;
+
+    try {
+      await adminAPI.createApproval(
+        approvalImpulso.id,
+        approvalForm.nombreCompleto,
+        approvalForm.fechaLogro,
+        approvalForm.mensaje
+      );
+      alert('Solicitud de impulso enviada correctamente. El equipo la revisará pronto.');
+      setShowApprovalForm(false);
+      setApprovalForm({ nombreCompleto: '', fechaLogro: '', mensaje: '' });
+      setApprovalImpulso(null);
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Error al enviar la solicitud');
     }
   };
 
@@ -74,8 +101,19 @@ export default function Impulsos() {
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
                 onClick={() => setSelectedImpulso(impulso)}
               >
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
-                  <h3 className="text-xl font-bold mb-2">{impulso.event_title}</h3>
+                <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setApprovalImpulso(impulso);
+                      setShowApprovalForm(true);
+                    }}
+                    className="absolute top-4 right-4 bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg shadow-lg transition-colors"
+                    title="Solicitar aprobación de este impulso"
+                  >
+                    <AlertCircle className="w-5 h-5" />
+                  </button>
+                  <h3 className="text-xl font-bold mb-2 pr-12">{impulso.event_title}</h3>
                   <div className="flex items-center text-2xl font-bold">
                     <Coins className="w-6 h-6 mr-2" />
                     <span>Ð {impulso.amount}</span>
@@ -165,6 +203,86 @@ export default function Impulsos() {
                 Cerrar
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Solicitud de Aprobación */}
+      {showApprovalForm && approvalImpulso && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowApprovalForm(false)}
+        >
+          <div
+            className="bg-white rounded-lg max-w-lg w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-gradient-to-r from-green-500 to-green-600 p-6 text-white">
+              <h2 className="text-2xl font-bold mb-2">Solicitar Aprobación de Impulso</h2>
+              <p className="text-green-50">{approvalImpulso.event_title}</p>
+            </div>
+
+            <form onSubmit={handleApprovalSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nombre completo
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  value={approvalForm.nombreCompleto}
+                  onChange={(e) => setApprovalForm({ ...approvalForm, nombreCompleto: e.target.value })}
+                  placeholder="Tu nombre completo"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fecha de logro
+                </label>
+                <input
+                  type="date"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  value={approvalForm.fechaLogro}
+                  onChange={(e) => setApprovalForm({ ...approvalForm, fechaLogro: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mensaje
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  value={approvalForm.mensaje}
+                  onChange={(e) => setApprovalForm({ ...approvalForm, mensaje: e.target.value })}
+                  placeholder="Describe tu logro y por qué mereces este impulso..."
+                />
+              </div>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowApprovalForm(false);
+                    setApprovalForm({ nombreCompleto: '', fechaLogro: '', mensaje: '' });
+                  }}
+                  className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 font-semibold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-semibold"
+                >
+                  Enviar
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

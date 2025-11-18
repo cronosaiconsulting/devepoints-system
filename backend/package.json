@@ -12,6 +12,7 @@
     "migrate:settings": "tsx src/scripts/migrate-settings.ts",
     "migrate:tokenoffers": "tsx src/scripts/migrate-token-offers.ts",
     "migrate:moneypaid": "tsx src/scripts/migrate-money-paid.ts",
+    "migrate:aprobaciones": "tsx src/scripts/migrate-aprobaciones.ts",
     "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {

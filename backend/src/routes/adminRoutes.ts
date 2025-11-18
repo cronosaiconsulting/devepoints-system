@@ -251,4 +251,78 @@ router.delete('/rewards/:id', async (req, res) => {
   }
 });
 
+// Impulso Approvals endpoints
+const impulsoApprovalSchema = z.object({
+  impulsoId: z.number(),
+  nombreCompleto: z.string().min(1),
+  fechaLogro: z.string(),
+  mensaje: z.string().min(1)
+});
+
+router.post('/approvals', authenticate, async (req, res) => {
+  try {
+    const userId = (req as any).user.userId;
+    const { impulsoId, nombreCompleto, fechaLogro, mensaje } = impulsoApprovalSchema.parse(req.body);
+    const approval = await adminService.createImpulsoApproval(userId, impulsoId, nombreCompleto, fechaLogro, mensaje);
+    res.status(201).json({ success: true, approval });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.get('/approvals', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 50;
+    const offset = parseInt(req.query.offset as string) || 0;
+    const userName = req.query.user_name as string | undefined;
+    const status = req.query.status as string | undefined;
+    const dateFrom = req.query.date_from as string | undefined;
+    const dateTo = req.query.date_to as string | undefined;
+
+    const result = await adminService.getAllApprovals(limit, offset, {
+      userName, status, dateFrom, dateTo
+    });
+    res.json({ success: true, ...result });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/approvals/:id', async (req, res) => {
+  try {
+    const approvalId = parseInt(req.params.id);
+    const approval = await adminService.getApprovalDetails(approvalId);
+    res.json({ success: true, approval });
+  } catch (error: any) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
+router.post('/approvals/:id/approve', async (req, res) => {
+  try {
+    const approvalId = parseInt(req.params.id);
+    const reviewerId = (req as any).user.userId;
+    const approval = await adminService.approveImpulso(approvalId, reviewerId);
+    res.json({ success: true, approval });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+const rejectSchema = z.object({
+  motivoRechazo: z.string().min(1)
+});
+
+router.post('/approvals/:id/reject', async (req, res) => {
+  try {
+    const approvalId = parseInt(req.params.id);
+    const reviewerId = (req as any).user.userId;
+    const { motivoRechazo } = rejectSchema.parse(req.body);
+    const approval = await adminService.rejectImpulso(approvalId, reviewerId, motivoRechazo);
+    res.json({ success: true, approval });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 export default router;
