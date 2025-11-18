@@ -48,7 +48,9 @@ export const SettingsView = () => {
   const handleSave = async (key: string) => {
     setSaving(true);
     try {
-      await settingsAPI.update(key, editedValues[key]);
+      console.log(`Saving setting ${key} with value:`, editedValues[key]);
+      const response = await settingsAPI.update(key, editedValues[key]);
+      console.log('Save response:', response.data);
       await loadSettings();
       alert('Configuración guardada correctamente');
     } catch (error) {

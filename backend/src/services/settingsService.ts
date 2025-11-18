@@ -56,6 +56,7 @@ export const settingsService = {
 
   async updateSetting(key: string, value: string) {
     try {
+      console.log(`Updating setting: ${key} = "${value}"`);
       const result = await pool.query(
         `UPDATE settings
          SET value = $1, updated_at = CURRENT_TIMESTAMP
@@ -64,14 +65,17 @@ export const settingsService = {
         [value, key]
       );
       if (result.rows.length === 0) {
+        console.log(`Setting not found: ${key}`);
         throw new Error('Setting not found');
       }
+      console.log(`Setting updated successfully: ${key} = "${result.rows[0].value}"`);
       return result.rows[0];
     } catch (error: any) {
       // If settings table doesn't exist, just return a mock response
       if (error.code === '42P01') {
         throw new Error('Settings table not initialized. Please run migrations.');
       }
+      console.error(`Error updating setting ${key}:`, error);
       throw error;
     }
   },

@@ -44,7 +44,7 @@ export const pdfService = {
             width: logoWidth,
             align: 'center'
           });
-          currentY += logoHeight + 15; // Move below logo with spacing
+          currentY += logoHeight + 40; // Move below logo with more spacing (was 15, now 40)
         }
 
         // Header with Develand branding - positioned below logo
