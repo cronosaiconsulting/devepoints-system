@@ -110,20 +110,27 @@ export default function Impulsos() {
             {impulsos.map((impulso) => (
               <div
                 key={impulso.id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow flex flex-col"
               >
                 <div
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white cursor-pointer"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white cursor-pointer flex flex-col"
                   onClick={() => setSelectedImpulso(impulso)}
                 >
-                  <h3 className="text-xl font-bold mb-2">{impulso.event_title}</h3>
+                  <h3
+                    className="font-bold mb-2 line-clamp-2 min-h-[3.5rem]"
+                    style={{
+                      fontSize: impulso.event_title.length > 50 ? '1rem' : impulso.event_title.length > 30 ? '1.125rem' : '1.25rem'
+                    }}
+                  >
+                    {impulso.event_title}
+                  </h3>
                   <div className="flex items-center text-2xl font-bold">
                     <Coins className="w-6 h-6 mr-2" />
                     <span>Ð {impulso.amount}</span>
                   </div>
                 </div>
 
-                <div className="p-6">
+                <div className="p-6 flex-1 flex flex-col">
                   <div className="flex items-center text-gray-600 mb-4">
                     <Calendar className="w-5 h-5 mr-2" />
                     <span className="text-sm">
@@ -131,13 +138,15 @@ export default function Impulsos() {
                     </span>
                   </div>
 
-                  {impulso.description && (
-                    <p className="text-gray-700 mb-4 line-clamp-3">
-                      {impulso.description}
-                    </p>
-                  )}
+                  <div className="flex-1 mb-4">
+                    {impulso.description && (
+                      <p className="text-gray-700 line-clamp-3">
+                        {impulso.description}
+                      </p>
+                    )}
+                  </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2 mt-auto">
                     <button
                       className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center"
                       onClick={() => setSelectedImpulso(impulso)}
