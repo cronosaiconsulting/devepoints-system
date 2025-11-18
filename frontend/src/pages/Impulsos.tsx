@@ -81,9 +81,21 @@ export default function Impulsos() {
             <Zap className="w-10 h-10 mr-3 text-yellow-500" />
             Impulsos Develand
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 text-lg mb-4">
             Descubre las recompensas disponibles para impulsar tu experiencia
           </p>
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-5 w-5 text-blue-500" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-blue-700">
+                  Si tus tokens por un Impulso no han sido entregados, pulsa en el botón verde <strong>"Reclamar"</strong> para solicitarlos
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {impulsos.length === 0 ? (
@@ -98,22 +110,13 @@ export default function Impulsos() {
             {impulsos.map((impulso) => (
               <div
                 key={impulso.id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
-                onClick={() => setSelectedImpulso(impulso)}
+                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
               >
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white relative">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setApprovalImpulso(impulso);
-                      setShowApprovalForm(true);
-                    }}
-                    className="absolute top-4 right-4 bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg shadow-lg transition-colors"
-                    title="Solicitar aprobación de este impulso"
-                  >
-                    <AlertCircle className="w-5 h-5" />
-                  </button>
-                  <h3 className="text-xl font-bold mb-2 pr-12">{impulso.event_title}</h3>
+                <div
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white cursor-pointer"
+                  onClick={() => setSelectedImpulso(impulso)}
+                >
+                  <h3 className="text-xl font-bold mb-2">{impulso.event_title}</h3>
                   <div className="flex items-center text-2xl font-bold">
                     <Coins className="w-6 h-6 mr-2" />
                     <span>Ð {impulso.amount}</span>
@@ -134,16 +137,25 @@ export default function Impulsos() {
                     </p>
                   )}
 
-                  <button
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedImpulso(impulso);
-                    }}
-                  >
-                    Ver Detalles
-                    <ChevronRight className="w-5 h-5 ml-1" />
-                  </button>
+                  <div className="space-y-2">
+                    <button
+                      className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center"
+                      onClick={() => setSelectedImpulso(impulso)}
+                    >
+                      Ver Detalles
+                      <ChevronRight className="w-5 h-5 ml-1" />
+                    </button>
+                    <button
+                      className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 flex items-center justify-center font-semibold"
+                      onClick={() => {
+                        setApprovalImpulso(impulso);
+                        setShowApprovalForm(true);
+                      }}
+                    >
+                      Reclamar
+                      <ChevronRight className="w-5 h-5 ml-1" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
