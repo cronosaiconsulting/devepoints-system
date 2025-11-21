@@ -96,6 +96,18 @@ export default function Impulsos() {
               </div>
             </div>
           </div>
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mt-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">
+                  🚫 <strong>Importante:</strong> Los tokens no son válidos para canjear en cursos ya realizados o actualmente en activo.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {impulsos.length === 0 ? (
