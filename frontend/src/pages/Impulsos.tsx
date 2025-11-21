@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminAPI } from '../api/client';
+import { userAPI, adminAPI } from '../api/client';
 import { Navbar } from '../components/Navbar';
 import { Zap, Calendar, Coins, ChevronRight, AlertCircle } from 'lucide-react';
 
@@ -31,7 +31,7 @@ export default function Impulsos() {
 
   const loadImpulsos = async () => {
     try {
-      const response = await adminAPI.getAllRewards();
+      const response = await userAPI.getRewards();
       setImpulsos(response.data.rewards);
     } catch (error) {
       console.error('Failed to load impulsos:', error);

@@ -34,7 +34,8 @@ export const userAPI = {
   getBalance: () => api.get('/user/balance'),
   getHistory: () => api.get('/user/history'),
   getExpiring: (days: number = 30) => api.get(`/user/expiring?days=${days}`),
-  getReferrals: () => api.get('/user/referrals')
+  getReferrals: () => api.get('/user/referrals'),
+  getRewards: () => api.get('/user/rewards')
 };
 
 export const storeAPI = {

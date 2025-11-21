@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { userService } from '../services/userService';
+import { adminService } from '../services/adminService';
 
 const router = Router();
 
@@ -38,6 +39,15 @@ router.get('/referrals', async (req, res) => {
   try {
     const stats = await userService.getReferralStats(req.user!.userId);
     res.json({ success: true, referrals: stats });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/rewards', async (req, res) => {
+  try {
+    const rewards = await adminService.getAllRewards();
+    res.json({ success: true, rewards });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
